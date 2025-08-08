@@ -159,7 +159,7 @@ static void build_volume_window(volume_app_t *app)
             gtk_range_set_value(GTK_RANGE(slider), app_audio_get_volume_percent(audio_app));
             gtk_scale_set_draw_value(GTK_SCALE(slider), TRUE);
             gtk_scale_set_value_pos(GTK_SCALE(slider), GTK_POS_RIGHT);
-            gtk_widget_set_size_request(slider, 160, 20);
+            gtk_widget_set_size_request(slider, 160, -1);
             
             // Store the sink input index for the callback
             uint32_t *index_ptr = g_malloc(sizeof(uint32_t));
