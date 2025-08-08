@@ -35,9 +35,7 @@ static void on_tray_icon_popup_menu(GtkStatusIcon *status_icon, guint button,
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), quit_item);
     
     gtk_widget_show_all(menu);
-    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, 
-                   gtk_status_icon_position_menu, status_icon,
-                   button, activate_time);
+    gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
 }
 
 static gboolean on_scroll_event(GtkStatusIcon *status_icon, GdkEventScroll *event, 
