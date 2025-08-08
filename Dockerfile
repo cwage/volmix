@@ -33,7 +33,9 @@ ARG GROUP_ID=1000
 RUN groupadd -g ${GROUP_ID} builder && \
     useradd -u ${USER_ID} -g builder -m builder && \
     mkdir -p /src && \
-    chown builder:builder /src
+    mkdir -p /home/builder/build && \
+    chown builder:builder /src && \
+    chown builder:builder /home/builder/build
 
 # Switch to non-root user
 USER builder
