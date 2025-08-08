@@ -1,0 +1,14 @@
+volume (1.0.0-1) unstable; urgency=medium
+
+  * Initial release of per-application volume control tool
+  * System tray integration with mouse wheel support
+  * Real-time PulseAudio application discovery
+  * Individual volume sliders for each audio application
+  * Compact UI with minimal whitespace
+  * Master volume control via scroll wheel over tray icon
+  * Asynchronous PulseAudio processing for responsive UI
+  * Memory leak fixes and code quality improvements
+  * Floating-point precision in volume calculations
+  * Named constants for better maintainability
+
+ -- Chris Wage <cwage@quietlife.net>  Wed, 07 Aug 2025 12:00:00 +0000

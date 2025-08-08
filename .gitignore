@@ -63,3 +63,39 @@ Thumbs.db
 *.pdb
 core
 vgcore.*
+
+# Debian packaging artifacts
+debian/files
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/volume/
+debian/volume.debhelper.log
+debian/volume.postinst.debhelper
+debian/volume.postrm.debhelper
+debian/volume.prerm.debhelper
+debian/volume.substvars
+debian/tmp/
+
+# Debian packages
+/*.deb
+/*.udeb
+/*.dsc
+/*.tar.gz
+/*.tar.xz
+/*.tar.bz2
+/*.changes
+/*.build
+/*.buildinfo
+/*.upload
+
+# Debian source package artifacts
+../*.deb
+../*.udeb
+../*.dsc
+../*.tar.gz
+../*.tar.xz
+../*.tar.bz2
+../*.changes
+../*.build
+../*.buildinfo
+../*.upload

@@ -1,0 +1,31 @@
+Source: volume
+Section: sound
+Priority: optional
+Maintainer: Chris Wage <cwage@quietlife.net>
+Build-Depends: debhelper-compat (= 13),
+               dh-autoreconf,
+               pkg-config,
+               libgtk-3-dev,
+               libpulse-dev,
+               libglib2.0-dev
+Standards-Version: 4.6.0
+Homepage: https://github.com/cwage/volume
+Vcs-Git: https://github.com/cwage/volume.git
+Vcs-Browser: https://github.com/cwage/volume
+
+Package: volume
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Per-application volume control for Linux
+ A lightweight system tray application that provides individual volume
+ control for each audio-producing application through PulseAudio.
+ .
+ Features:
+  - System tray integration with mouse wheel volume control
+  - Real-time discovery of applications playing audio
+  - Individual volume sliders for each application
+  - Compact, efficient user interface
+  - Master volume control via scroll wheel
+ .
+ Inspired by volumeicon but extended to show individual audio streams
+ from running applications.

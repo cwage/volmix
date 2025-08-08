@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+
+# Debian packaging rules for volume
+# Uses modern debhelper with autoreconf
+
+# Enable all hardening features
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# Uncomment this to turn on verbose mode
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_auto_configure:
+	dh_auto_configure -- --prefix=/usr
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f config.h.in~
+
+# Install the binary to the correct location
+override_dh_auto_install:
+	dh_auto_install
+
+# Add manual pages if they exist (currently none)
+# override_dh_installman:
+#	dh_installman debian/volume.1
