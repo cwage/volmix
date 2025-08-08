@@ -27,8 +27,8 @@
 .libs/
 
 # Generated binaries
-/src/volume
-/volume
+/src/volmix
+/volmix
 
 # Backup files
 *~
@@ -68,12 +68,12 @@ vgcore.*
 debian/files
 debian/.debhelper/
 debian/debhelper-build-stamp
-debian/volume/
-debian/volume.debhelper.log
-debian/volume.postinst.debhelper
-debian/volume.postrm.debhelper
-debian/volume.prerm.debhelper
-debian/volume.substvars
+debian/volmix/
+debian/volmix.debhelper.log
+debian/volmix.postinst.debhelper
+debian/volmix.postrm.debhelper
+debian/volmix.prerm.debhelper
+debian/volmix.substvars
 debian/tmp/
 debian/autoreconf.before
 debian/autoreconf.after

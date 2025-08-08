@@ -4,14 +4,38 @@ A lightweight system tray application for Linux that provides per-application vo
 
 ## Features
 
-- **System Tray Integration**: Displays as an icon in the system tray
+- **System Tray Integration**: Clean system tray icon with intuitive interaction
 - **Per-Application Control**: Individual volume sliders for each audio-producing application
-- **Real-time Updates**: Dynamic menu updates as applications start/stop audio playback
-- **Mouse Interaction**: 
-  - Left click: Open application list menu
-  - Right click: Context menu
-  - Scroll wheel: Adjust master volume (like volumeicon)
+- **Real-time Updates**: Dynamic discovery of applications playing audio via PulseAudio
+- **Smart Interaction**: 
+  - Left click: Toggle volume control window (show/hide)
+  - Right click: Context menu with quit option
+  - Mouse wheel: Adjust master volume
+- **Streamlined Interface**: Clean UI without redundant buttons
 - **Lightweight**: Minimal memory footprint and CPU usage
+
+## Installation
+
+### Option 1: Download Pre-built Package (Recommended)
+
+Download the latest `.deb` package from the [releases page](https://github.com/cwage/volmix/releases):
+
+```bash
+# Download the package for your architecture
+wget https://github.com/cwage/volmix/releases/latest/download/volmix_1.0.0-1_amd64.deb
+
+# Install the package
+sudo dpkg -i volmix_1.0.0-1_amd64.deb
+
+# Install any missing dependencies
+sudo apt-get install -f
+```
+
+**Available Architectures:**
+- `amd64` (x86_64) - Most desktop/laptop systems
+- `arm64` (AArch64) - ARM-based systems, Raspberry Pi 4+
+
+### Option 2: Build from Source
 
 ## Dependencies
 
@@ -53,39 +77,43 @@ sudo apt install build-essential autotools-dev autoconf automake \
 
 ## Usage
 
+### Running after Installation
+```bash
+# Start volmix in the background
+volmix &
+```
+
 ### Running from Build Directory
 ```bash
 ./src/volmix &
-```
-
-### Running after Installation
-```bash
-volmix &
 ```
 
 The `&` runs the application in the background, allowing you to continue using the terminal.
 
 ## Controls
 
-- **Left Click**: Open application menu (currently shows basic message)
-- **Right Click**: Context menu with Quit option
-- **Scroll Wheel**: Master volume control (placeholder - prints to console)
+- **Left Click**: Toggle volume control window (show/hide)
+- **Right Click**: Context menu with quit option  
+- **Mouse Wheel**: Adjust master volume
+- **Window Close**: Use window controls or click tray icon to hide
 - **Ctrl+C**: Quit application (when run in foreground)
+
+## Requirements
+
+- **PulseAudio**: Audio system integration
+- **GTK3**: GUI framework  
+- **Linux Desktop**: System tray support (GNOME, KDE, XFCE, etc.)
 
 ## Current Status
 
-This is the initial development version with basic system tray functionality. The following features are implemented:
+This is a functional release with complete per-application volume control:
 
-- ✅ System tray icon display
-- ✅ Mouse event handling
-- ✅ Basic menu system
-- ✅ Clean shutdown handling
-
-**Coming Next:**
-- PulseAudio integration for application detection
-- Dynamic volume sliders for each audio application
-- Master volume control via scroll wheel
-- Application icons in menu
+- ✅ System tray integration with toggle behavior
+- ✅ Real-time PulseAudio application detection
+- ✅ Individual volume controls for each audio stream
+- ✅ Master volume control via mouse wheel
+- ✅ Clean, streamlined interface
+- ✅ Optimized window reuse for better performance
 
 ## Development
 
@@ -103,10 +131,36 @@ To stop the application:
 pkill volmix
 ```
 
+## Troubleshooting
+
+### Common Issues
+
+**System tray icon not appearing:**
+- Ensure your desktop environment supports system tray (most do)
+- Try restarting your window manager/desktop environment
+- Check that `volmix` process is running: `ps aux | grep volmix`
+
+**No applications shown in volume control:**
+- Make sure applications are actively playing audio
+- Verify PulseAudio is running: `pulseaudio --check`
+- Check PulseAudio applications: `pactl list sink-inputs`
+
+**Permission or dependency errors:**
+- Install missing dependencies: `sudo apt-get install -f`
+- Ensure user is in audio group: `sudo usermod -a -G audio $USER`
+
 ## License
 
-TBD
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-This project is in early development. Please check the issue tracker and `CLAUDE.md` for development guidelines.
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+- **Bug Reports**: Use the [issue tracker](https://github.com/cwage/volmix/issues)
+- **Feature Requests**: Open an issue with your ideas
+- **Development**: See `CLAUDE.md` for architecture and development guidelines
+
+## Acknowledgments
+
+Inspired by [`volumeicon`](https://github.com/Maato/volumeicon) - thanks to the original developers for the concept and design inspiration.
