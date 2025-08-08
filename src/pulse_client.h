@@ -67,4 +67,7 @@ app_audio_t* app_audio_new(uint32_t index, const char *name, const char *process
 void app_audio_free(app_audio_t *app);
 int app_audio_get_volume_percent(const app_audio_t *app);
 
+// Volume conversion helper
+pa_volume_t pulse_client_percent_to_pa_volume(int volume_percent);
+
 #endif // PULSE_CLIENT_H

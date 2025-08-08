@@ -6,6 +6,10 @@
 #include <string.h>
 #include "pulse_client.h"
 
+// Constants for PulseAudio operation timeouts and delays
+#define MAX_REFRESH_TIMEOUT 50     // Maximum iterations to wait for refresh (0.25s)
+#define DELAY_5_MS_USEC 5000       // 5ms delay in microseconds
+
 typedef struct {
     GtkWidget *tray_icon;
     GtkWidget *popup_menu;
@@ -75,12 +79,11 @@ static void build_volume_window(volume_app_t *app)
     if (app->pulse_client.operation) {
         // Wait for the refresh operation to complete (this is necessary for UI)
         int timeout_count = 0;
-        const int MAX_TIMEOUT = 50; // 0.25 seconds max
         
         while (pa_operation_get_state(app->pulse_client.operation) == PA_OPERATION_RUNNING && 
-               timeout_count < MAX_TIMEOUT) {
+               timeout_count < MAX_REFRESH_TIMEOUT) {
             pulse_client_iterate(&app->pulse_client);
-            g_usleep(5000); // 5ms delay
+            g_usleep(DELAY_5_MS_USEC); // 5ms delay
             timeout_count++;
         }
         

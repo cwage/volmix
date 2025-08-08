@@ -165,14 +165,15 @@ gboolean pulse_client_set_master_volume(pulse_client_t *client, int volume)
         return FALSE;
     }
     
-    // Convert percentage to PulseAudio volume with floating-point precision
-    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100.0);
+    // Convert percentage to PulseAudio volume
+    pa_volume_t pa_volume = pulse_client_percent_to_pa_volume(volume);
     
     // Set all channels to same volume
     pa_cvolume new_volume = client->default_sink_volume;
     pa_cvolume_set(&new_volume, new_volume.channels, pa_volume);
     
     // Send volume change to PulseAudio
+    // Clean up any previous operation (running or completed) before starting new one
     if (client->operation) {
         pa_operation_unref(client->operation);
     }
@@ -360,8 +361,8 @@ gboolean pulse_client_set_app_volume(pulse_client_t *client, uint32_t sink_input
         return FALSE;
     }
     
-    // Convert percentage to PulseAudio volume with floating-point precision
-    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100.0);
+    // Convert percentage to PulseAudio volume
+    pa_volume_t pa_volume = pulse_client_percent_to_pa_volume(volume);
     
     // Find the app to get current volume structure
     GList *item = client->audio_apps;
@@ -386,6 +387,7 @@ gboolean pulse_client_set_app_volume(pulse_client_t *client, uint32_t sink_input
     }
     
     // Send volume change to PulseAudio
+    // Clean up any previous operation (running or completed) before starting new one
     if (client->operation) {
         pa_operation_unref(client->operation);
     }
@@ -464,6 +466,15 @@ int app_audio_get_volume_percent(const app_audio_t *app)
         return 0;
     }
     return (int)((pa_cvolume_avg(&app->volume) * 100) / PA_VOLUME_NORM);
+}
+
+pa_volume_t pulse_client_percent_to_pa_volume(int volume_percent)
+{
+    if (volume_percent < 0) volume_percent = 0;
+    if (volume_percent > 100) volume_percent = 100;
+    
+    // Convert percentage to PulseAudio volume using integer arithmetic
+    return (pa_volume_t)((volume_percent * PA_VOLUME_NORM) / 100);
 }
 
 static void sink_input_info_callback(pa_context *c, const pa_sink_input_info *info, int eol, void *userdata)
