@@ -11,9 +11,12 @@ echo "Building volume Debian package..."
 echo "Architecture: $ARCHITECTURE"
 echo "Build Type: $BUILD_TYPE"
 
-# Build the Docker image
+# Build the Docker image with current user's UID/GID
 echo "Building Docker image..."
-docker build -t volume-builder .
+docker build \
+    --build-arg USER_ID=$(id -u) \
+    --build-arg GROUP_ID=$(id -g) \
+    -t volume-builder .
 
 # Run the build with volume mount to output packages to current directory
 echo "Running package build..."
