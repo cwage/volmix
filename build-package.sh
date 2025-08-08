@@ -24,7 +24,7 @@ docker run --rm \
     -v "$(pwd):/src" \
     -w /home/builder/build \
     volmix-builder \
-    bash -c "cp -r /src/* . && dpkg-buildpackage -us -uc && cp ../*.deb /src/ 2>/dev/null"
+    bash -c "cp -r /src/. . && dpkg-buildpackage -us -uc && cp ../*.deb /src/ 2>/dev/null"
 
 # Check if any .deb files were generated
 debs=$(find . -maxdepth 1 -type f -name '*.deb')
