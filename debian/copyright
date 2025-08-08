@@ -1,14 +1,14 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: volume
-Upstream-Contact: Chris Wage <noreply@example.com>
+Upstream-Contact: Chris Wage <cwage@quietlife.net>
 Source: https://github.com/cwage/volume
 
 Files: *
-Copyright: 2024 Chris Wage <noreply@example.com>
+Copyright: 2024 Chris Wage <cwage@quietlife.net>
 License: MIT
 
 Files: debian/*
-Copyright: 2024 Chris Wage <noreply@example.com>
+Copyright: 2024 Chris Wage <cwage@quietlife.net>
 License: MIT
 
 License: MIT
