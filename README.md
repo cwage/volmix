@@ -21,11 +21,11 @@ A lightweight system tray application for Linux that provides per-application vo
 Download the latest `.deb` package from the [releases page](https://github.com/cwage/volmix/releases):
 
 ```bash
-# Download the package for your architecture
-wget https://github.com/cwage/volmix/releases/latest/download/volmix_1.0.0-1_amd64.deb
+# Download the package for your architecture (replace <version> with latest release version)
+wget https://github.com/cwage/volmix/releases/latest/download/volmix_<version>_amd64.deb
 
-# Install the package
-sudo dpkg -i volmix_1.0.0-1_amd64.deb
+# Install the package (replace <version> with the actual version downloaded)
+sudo dpkg -i volmix_<version>_amd64.deb
 
 # Install any missing dependencies
 sudo apt-get install -f
