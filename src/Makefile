@@ -99,7 +99,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_volume_OBJECTS = volume-volume.$(OBJEXT)
+am_volume_OBJECTS = volume-volume.$(OBJEXT) \
+	volume-pulse_client.$(OBJEXT)
 volume_OBJECTS = $(am_volume_OBJECTS)
 am__DEPENDENCIES_1 =
 volume_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -121,7 +122,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/volume-volume.Po
+am__depfiles_remade = ./$(DEPDIR)/volume-pulse_client.Po \
+	./$(DEPDIR)/volume-volume.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -262,7 +264,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-volume_SOURCES = volume.c
+volume_SOURCES = volume.c pulse_client.c pulse_client.h
 volume_CFLAGS = $(GTK_CFLAGS) $(PULSE_CFLAGS) $(GLIB_CFLAGS)
 volume_LDADD = $(GTK_LIBS) $(PULSE_LIBS) $(GLIB_LIBS)
 all: all-am
@@ -351,6 +353,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/volume-pulse_client.Po # am--include-marker
 include ./$(DEPDIR)/volume-volume.Po # am--include-marker
 
 $(am__depfiles_remade):
@@ -386,6 +389,20 @@ volume-volume.obj: volume.c
 #	$(AM_V_CC)source='volume.c' object='volume-volume.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-volume.obj `if test -f 'volume.c'; then $(CYGPATH_W) 'volume.c'; else $(CYGPATH_W) '$(srcdir)/volume.c'; fi`
+
+volume-pulse_client.o: pulse_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-pulse_client.o -MD -MP -MF $(DEPDIR)/volume-pulse_client.Tpo -c -o volume-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-pulse_client.Tpo $(DEPDIR)/volume-pulse_client.Po
+#	$(AM_V_CC)source='pulse_client.c' object='volume-pulse_client.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
+
+volume-pulse_client.obj: pulse_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-pulse_client.obj -MD -MP -MF $(DEPDIR)/volume-pulse_client.Tpo -c -o volume-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-pulse_client.Tpo $(DEPDIR)/volume-pulse_client.Po
+#	$(AM_V_CC)source='pulse_client.c' object='volume-pulse_client.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -513,7 +530,8 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/volume-volume.Po
+		-rm -f ./$(DEPDIR)/volume-pulse_client.Po
+	-rm -f ./$(DEPDIR)/volume-volume.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -559,7 +577,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/volume-volume.Po
+		-rm -f ./$(DEPDIR)/volume-pulse_client.Po
+	-rm -f ./$(DEPDIR)/volume-volume.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
