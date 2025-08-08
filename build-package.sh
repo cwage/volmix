@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build script for volume Debian package using Docker
+# Build script for volmix Debian package using Docker
 
 set -e
 

@@ -59,17 +59,17 @@ static void on_app_volume_changed(GtkRange *range, gpointer user_data)
 
 static void on_close_button_clicked(GtkButton *button, gpointer user_data)
 {
-    volume_app_t *app = (volume_app_t *)user_data;
-    gtk_widget_hide(app->volume_window);
+    volmix_app_t *app = (volmix_app_t *)user_data;
+    gtk_widget_hide(app->volmix_window);
 }
 
-static void build_volume_window(volume_app_t *app)
+static void build_volume_window(volmix_app_t *app)
 {
     // Destroy existing window if it exists
     // TODO: Optimization opportunity - update existing window content instead of destroying/rebuilding
-    if (app->volume_window) {
-        gtk_widget_destroy(app->volume_window);
-        app->volume_window = NULL;
+    if (app->volmix_window) {
+        gtk_widget_destroy(app->volmix_window);
+        app->volmix_window = NULL;
     }
     
     // Refresh the list of audio applications
@@ -102,18 +102,18 @@ static void build_volume_window(volume_app_t *app)
     printf("Found %d applications when building window\n", g_list_length(apps));
     
     // Create popup window
-    app->volume_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(app->volume_window), "Volume Control");
-    gtk_window_set_decorated(GTK_WINDOW(app->volume_window), TRUE);
-    gtk_window_set_skip_taskbar_hint(GTK_WINDOW(app->volume_window), FALSE);
-    gtk_window_set_skip_pager_hint(GTK_WINDOW(app->volume_window), FALSE);
-    gtk_window_set_type_hint(GTK_WINDOW(app->volume_window), GDK_WINDOW_TYPE_HINT_DIALOG);
-    gtk_window_set_resizable(GTK_WINDOW(app->volume_window), FALSE);
+    app->volmix_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(app->volmix_window), "Volume Control");
+    gtk_window_set_decorated(GTK_WINDOW(app->volmix_window), TRUE);
+    gtk_window_set_skip_taskbar_hint(GTK_WINDOW(app->volmix_window), FALSE);
+    gtk_window_set_skip_pager_hint(GTK_WINDOW(app->volmix_window), FALSE);
+    gtk_window_set_type_hint(GTK_WINDOW(app->volmix_window), GDK_WINDOW_TYPE_HINT_DIALOG);
+    gtk_window_set_resizable(GTK_WINDOW(app->volmix_window), FALSE);
     
     // Create main container with minimal spacing
     GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
     gtk_container_set_border_width(GTK_CONTAINER(main_box), 4);
-    gtk_container_add(GTK_CONTAINER(app->volume_window), main_box);
+    gtk_container_add(GTK_CONTAINER(app->volmix_window), main_box);
     
     if (apps == NULL) {
         // No applications playing audio
@@ -200,7 +200,7 @@ static void build_volume_window(volume_app_t *app)
 
 static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data)
 {
-    volume_app_t *app = (volume_app_t *)user_data;
+    volmix_app_t *app = (volmix_app_t *)user_data;
     
     printf("Tray icon clicked! Building volume control window...\n");
     
@@ -208,7 +208,7 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
     build_volume_window(app);
     
     // Show the window first so GTK can calculate its size
-    gtk_widget_show_all(app->volume_window);
+    gtk_widget_show_all(app->volmix_window);
     
     // Position the window near the mouse cursor after showing
     GdkDisplay *display = gdk_display_get_default();
@@ -221,7 +221,7 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
     
     // Get window size to position it properly
     gint width, height;
-    gtk_window_get_size(GTK_WINDOW(app->volume_window), &width, &height);
+    gtk_window_get_size(GTK_WINDOW(app->volmix_window), &width, &height);
     
     // Position window so it appears near the cursor but doesn't go off screen
     x = x - width / 2;
@@ -240,14 +240,14 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
     if (y + height > screen_geometry.y + screen_geometry.height) 
         y = screen_geometry.y + screen_geometry.height - height;
     
-    gtk_window_move(GTK_WINDOW(app->volume_window), x, y);
-    gtk_window_present(GTK_WINDOW(app->volume_window));
+    gtk_window_move(GTK_WINDOW(app->volmix_window), x, y);
+    gtk_window_present(GTK_WINDOW(app->volmix_window));
 }
 
 static void on_tray_icon_popup_menu(GtkStatusIcon *status_icon, guint button, 
                                    guint activate_time, gpointer user_data)
 {
-    volume_app_t *app = (volume_app_t *)user_data;
+    volmix_app_t *app = (volmix_app_t *)user_data;
     
     // Create a simple context menu for now
     GtkWidget *menu = gtk_menu_new();
@@ -263,7 +263,7 @@ static void on_tray_icon_popup_menu(GtkStatusIcon *status_icon, guint button,
 static gboolean on_scroll_event(GtkStatusIcon *status_icon, GdkEventScroll *event, 
                                gpointer user_data)
 {
-    volume_app_t *app = (volume_app_t *)user_data;
+    volmix_app_t *app = (volmix_app_t *)user_data;
     const int volume_step = 5; // 5% volume steps
     
     if (event->direction == GDK_SCROLL_UP) {
@@ -287,7 +287,7 @@ static gboolean on_scroll_event(GtkStatusIcon *status_icon, GdkEventScroll *even
     return TRUE;
 }
 
-static void setup_tray_icon(volume_app_t *app)
+static void setup_tray_icon(volmix_app_t *app)
 {
     app->tray_icon = gtk_status_icon_new();
     
@@ -296,7 +296,7 @@ static void setup_tray_icon(volume_app_t *app)
                                       "audio-volume-high");
     
     gtk_status_icon_set_tooltip_text(GTK_STATUS_ICON(app->tray_icon), 
-                                    "Volume - Per-Application Audio Control");
+                                    "volmix - Per-Application Audio Control");
     
     gtk_status_icon_set_visible(GTK_STATUS_ICON(app->tray_icon), TRUE);
     
@@ -309,16 +309,16 @@ static void setup_tray_icon(volume_app_t *app)
                     G_CALLBACK(on_scroll_event), app);
 }
 
-static void cleanup_app(volume_app_t *app)
+static void cleanup_app(volmix_app_t *app)
 {
     if (app->tray_icon) {
         gtk_status_icon_set_visible(GTK_STATUS_ICON(app->tray_icon), FALSE);
         app->tray_icon = NULL;
     }
     
-    if (app->volume_window) {
-        gtk_widget_destroy(app->volume_window);
-        app->volume_window = NULL;
+    if (app->volmix_window) {
+        gtk_widget_destroy(app->volmix_window);
+        app->volmix_window = NULL;
     }
     
     // Cleanup PulseAudio client
@@ -335,7 +335,7 @@ static void signal_handler(int sig)
 
 static gboolean pulse_client_timer_callback(gpointer user_data)
 {
-    volume_app_t *app = (volume_app_t *)user_data;
+    volmix_app_t *app = (volmix_app_t *)user_data;
     
     // Process PulseAudio events
     pulse_client_iterate(&app->pulse_client);
@@ -353,7 +353,7 @@ int main(int argc, char *argv[])
     signal(SIGTERM, signal_handler);
     
     // Initialize application data
-    memset(&app_data, 0, sizeof(volume_app_t));
+    memset(&app_data, 0, sizeof(volmix_app_t));
     
     // Initialize and connect PulseAudio client
     if (!pulse_client_init(&app_data.pulse_client)) {
@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
     // Set up timer to process PulseAudio events regularly
     g_timeout_add(100, pulse_client_timer_callback, &app_data);
     
-    printf("Volume application started. System tray icon should be visible.\n");
+    printf("volmix application started. System tray icon should be visible.\n");
     printf("Left-click: Show menu, Right-click: Context menu, Scroll: Master volume\n");
     printf("Current volume: %d%%\n", pulse_client_get_master_volume(&app_data.pulse_client));
     printf("Press Ctrl+C to quit.\n");
