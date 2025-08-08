@@ -13,7 +13,29 @@ typedef struct {
     pulse_client_t pulse_client;
 } volume_app_t;
 
+// Structure for asynchronous PulseAudio processing
+typedef struct {
+    volume_app_t *app;
+    int count;
+} AsyncIterateData;
+
 static volume_app_t app_data;
+
+// Asynchronous callback for PulseAudio processing
+static gboolean async_iterate_callback(gpointer user_data)
+{
+    AsyncIterateData *data = (AsyncIterateData *)user_data;
+    pulse_client_iterate(&data->app->pulse_client);
+    data->count++;
+    
+    if (data->count < 5) {
+        // Schedule next iteration after 10ms
+        return G_SOURCE_CONTINUE;
+    } else {
+        g_free(data);
+        return G_SOURCE_REMOVE;
+    }
+}
 
 static void on_app_volume_changed(GtkRange *range, gpointer user_data)
 {
@@ -40,6 +62,7 @@ static void on_close_button_clicked(GtkButton *button, gpointer user_data)
 static void build_volume_window(volume_app_t *app)
 {
     // Destroy existing window if it exists
+    // TODO: Optimization opportunity - update existing window content instead of destroying/rebuilding
     if (app->volume_window) {
         gtk_widget_destroy(app->volume_window);
         app->volume_window = NULL;
@@ -48,21 +71,28 @@ static void build_volume_window(volume_app_t *app)
     // Refresh the list of audio applications
     pulse_client_refresh_apps(&app->pulse_client);
     
-    // Process pending PulseAudio operations and wait for results
+    // Process pending PulseAudio operations with minimal blocking
     if (app->pulse_client.operation) {
-        while (pa_operation_get_state(app->pulse_client.operation) == PA_OPERATION_RUNNING) {
+        // Wait for the refresh operation to complete (this is necessary for UI)
+        int timeout_count = 0;
+        const int MAX_TIMEOUT = 50; // 0.25 seconds max
+        
+        while (pa_operation_get_state(app->pulse_client.operation) == PA_OPERATION_RUNNING && 
+               timeout_count < MAX_TIMEOUT) {
             pulse_client_iterate(&app->pulse_client);
             g_usleep(5000); // 5ms delay
+            timeout_count++;
         }
+        
         pa_operation_unref(app->pulse_client.operation);
         app->pulse_client.operation = NULL;
     }
     
-    // Additional processing time
-    for (int i = 0; i < 5; i++) {
-        pulse_client_iterate(&app->pulse_client);
-        g_usleep(10000); // 10ms delay
-    }
+    // Schedule additional processing time asynchronously for ongoing events
+    AsyncIterateData *iterate_data = g_new0(AsyncIterateData, 1);
+    iterate_data->app = app;
+    iterate_data->count = 0;
+    g_timeout_add(10, async_iterate_callback, iterate_data);
     
     // Get list of audio applications
     GList *apps = pulse_client_get_apps(&app->pulse_client);
@@ -131,10 +161,13 @@ static void build_volume_window(volume_app_t *app)
             // Store the sink input index for the callback
             uint32_t *index_ptr = g_malloc(sizeof(uint32_t));
             *index_ptr = audio_app->index;
+            
+            // Use g_object_set_data_full to ensure memory is freed when widget is destroyed
             g_object_set_data_full(G_OBJECT(slider), "sink_input_index", index_ptr, g_free);
             
-            // Connect slider signal
-            g_signal_connect(slider, "value-changed", G_CALLBACK(on_app_volume_changed), index_ptr);
+            // Connect slider signal using the stored data instead of direct pointer
+            g_signal_connect(slider, "value-changed", G_CALLBACK(on_app_volume_changed), 
+                           g_object_get_data(G_OBJECT(slider), "sink_input_index"));
             
             gtk_box_pack_start(GTK_BOX(app_box), slider, FALSE, FALSE, 0);
             

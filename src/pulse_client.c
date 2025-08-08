@@ -165,8 +165,8 @@ gboolean pulse_client_set_master_volume(pulse_client_t *client, int volume)
         return FALSE;
     }
     
-    // Convert percentage to PulseAudio volume
-    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100);
+    // Convert percentage to PulseAudio volume with floating-point precision
+    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100.0);
     
     // Set all channels to same volume
     pa_cvolume new_volume = client->default_sink_volume;
@@ -360,8 +360,8 @@ gboolean pulse_client_set_app_volume(pulse_client_t *client, uint32_t sink_input
         return FALSE;
     }
     
-    // Convert percentage to PulseAudio volume
-    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100);
+    // Convert percentage to PulseAudio volume with floating-point precision
+    pa_volume_t pa_volume = (pa_volume_t)((volume * PA_VOLUME_NORM) / 100.0);
     
     // Find the app to get current volume structure
     GList *item = client->audio_apps;
