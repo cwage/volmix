@@ -48,7 +48,11 @@ jobs:
     - name: Verify package creation
       run: |
         echo "Checking for generated .deb packages..."
-        debs=$(find . -maxdepth 1 -type f -name '*.deb')
+        if [ ! -f debs.list ]; then
+          echo "ERROR: debs.list not found! Build script should generate this file."
+          exit 1
+        fi
+        debs=$(cat debs.list)
         if [ -z "$debs" ]; then
           echo "ERROR: No .deb packages found!"
           exit 1
