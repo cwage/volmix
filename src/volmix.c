@@ -57,11 +57,6 @@ static void on_app_volume_changed(GtkRange *range, gpointer user_data)
     }
 }
 
-static void on_close_button_clicked(GtkButton *button, gpointer user_data)
-{
-    volmix_app_t *app = (volmix_app_t *)user_data;
-    gtk_widget_hide(app->volmix_window);
-}
 
 static void build_volume_window(volmix_app_t *app)
 {
@@ -178,24 +173,9 @@ static void build_volume_window(volmix_app_t *app)
         }
         printf("Added %d applications to window\n", app_count);
         
-        // Add separator before quit
-        GtkWidget *separator2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_start(GTK_BOX(main_box), separator2, FALSE, FALSE, 1);
     }
     
-    // Add close and quit buttons
-    GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_box_pack_start(GTK_BOX(main_box), button_box, FALSE, FALSE, 0);
-    
-    GtkWidget *close_button = gtk_button_new_with_label("Close");
-    g_signal_connect(close_button, "clicked", G_CALLBACK(on_close_button_clicked), app);
-    gtk_box_pack_start(GTK_BOX(button_box), close_button, TRUE, TRUE, 0);
-    
-    GtkWidget *quit_button = gtk_button_new_with_label("Quit App");
-    g_signal_connect(quit_button, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_box_pack_start(GTK_BOX(button_box), quit_button, TRUE, TRUE, 0);
-    
-    // Let user close window manually via quit button or window close button
+    // Window can be closed by clicking tray icon again or using window controls
 }
 
 static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data)
