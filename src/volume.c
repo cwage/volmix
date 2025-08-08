@@ -76,7 +76,7 @@ static void setup_tray_icon(volume_app_t *app)
 static void cleanup_app(volume_app_t *app)
 {
     if (app->tray_icon) {
-        g_object_unref(app->tray_icon);
+        gtk_status_icon_set_visible(GTK_STATUS_ICON(app->tray_icon), FALSE);
         app->tray_icon = NULL;
     }
 }
