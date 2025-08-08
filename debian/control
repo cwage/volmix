@@ -1,7 +1,7 @@
 Source: volume
 Section: sound
 Priority: optional
-Maintainer: Chris Wage <noreply@example.com>
+Maintainer: Chris Wage <cwage@quietlife.net>
 Build-Depends: debhelper-compat (= 13),
                dh-autoreconf,
                pkg-config,
