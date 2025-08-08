@@ -75,6 +75,8 @@ debian/volume.postrm.debhelper
 debian/volume.prerm.debhelper
 debian/volume.substvars
 debian/tmp/
+debian/autoreconf.before
+debian/autoreconf.after
 
 # Debian packages
 /*.deb
