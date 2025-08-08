@@ -1,0 +1,65 @@
+# Autotools generated files
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/compile
+/config.guess
+/config.h
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+
+# Build artifacts
+*.o
+*.lo
+*.la
+*.so
+*.so.*
+*.a
+.deps/
+.libs/
+
+# Generated binaries
+/src/volume
+/volume
+
+# Backup files
+*~
+*.bak
+*.orig
+*.rej
+
+# Editor files
+.*.swp
+.*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+core
+vgcore.*
