@@ -11,4 +11,4 @@ volume (1.0.0-1) unstable; urgency=medium
   * Floating-point precision in volume calculations
   * Named constants for better maintainability
 
- -- Chris Wage <cwage@quietlife.net>  Fri, 08 Aug 2025 12:00:00 +0000
+ -- Chris Wage <cwage@quietlife.net>  Wed, 07 Aug 2025 12:00:00 +0000

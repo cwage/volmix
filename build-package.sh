@@ -15,8 +15,14 @@ docker run --rm \
     -v "$(pwd):/src" \
     -w /src \
     volume-builder \
-    bash -c "dpkg-buildpackage -us -uc && cp ../*.deb . 2>/dev/null || true"
+    bash -c "dpkg-buildpackage -us -uc && cp ../*.deb . 2>/dev/null"
 
-echo "Package build complete!"
-echo "Generated files:"
-ls -la *.deb 2>/dev/null || echo "No .deb package found"
+# Check if any .deb files were generated
+if ls *.deb 1> /dev/null 2>&1; then
+    echo "Package build complete!"
+    echo "Generated files:"
+    ls -la *.deb
+else
+    echo "ERROR: No .deb package found. Build may have failed."
+    exit 1
+fi
