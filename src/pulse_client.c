@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 static void context_state_callback(pa_context *c, void *userdata);
 static void sink_info_callback(pa_context *c, const pa_sink_info *info, int eol, void *userdata);
@@ -81,9 +82,18 @@ gboolean pulse_client_connect(pulse_client_t *client)
         return FALSE;
     }
     
-    // Wait for connection
+    // Wait for connection with timeout
     int retval;
+    const int TIMEOUT_SECONDS = 5;
+    time_t start_time = time(NULL);
+    
     while (TRUE) {
+        // Check for timeout
+        if (time(NULL) - start_time > TIMEOUT_SECONDS) {
+            printf("PulseAudio connection timeout after %d seconds\n", TIMEOUT_SECONDS);
+            return FALSE;
+        }
+        
         if (pa_mainloop_iterate(client->mainloop, 1, &retval) < 0) {
             printf("PulseAudio mainloop iteration failed\n");
             return FALSE;
@@ -97,13 +107,16 @@ gboolean pulse_client_connect(pulse_client_t *client)
             // Get server info to find default sink
             client->operation = pa_context_get_server_info(client->context, 
                                                          server_info_callback, client);
-            if (client->operation) {
-                while (pa_operation_get_state(client->operation) == PA_OPERATION_RUNNING) {
-                    pa_mainloop_iterate(client->mainloop, 1, NULL);
-                }
-                pa_operation_unref(client->operation);
-                client->operation = NULL;
+            if (!client->operation) {
+                printf("Failed to get server info from PulseAudio\n");
+                return FALSE;
             }
+            
+            while (pa_operation_get_state(client->operation) == PA_OPERATION_RUNNING) {
+                pa_mainloop_iterate(client->mainloop, 1, NULL);
+            }
+            pa_operation_unref(client->operation);
+            client->operation = NULL;
             
             return TRUE;
         } else if (state == PA_CONTEXT_FAILED || state == PA_CONTEXT_TERMINATED) {
@@ -152,6 +165,9 @@ gboolean pulse_client_set_master_volume(pulse_client_t *client, int volume)
     pa_cvolume_set(&new_volume, new_volume.channels, pa_volume);
     
     // Send volume change to PulseAudio
+    if (client->operation) {
+        pa_operation_unref(client->operation);
+    }
     client->operation = pa_context_set_sink_volume_by_index(client->context,
                                                            client->default_sink_index,
                                                            &new_volume,
@@ -204,6 +220,11 @@ gboolean pulse_client_toggle_master_mute(pulse_client_t *client)
     // Toggle mute state
     gboolean new_mute_state = !client->default_sink_muted;
     
+    // Clean up previous operation to prevent memory leak
+    if (client->operation) {
+        pa_operation_unref(client->operation);
+        client->operation = NULL;
+    }
     client->operation = pa_context_set_sink_mute_by_index(client->context,
                                                          client->default_sink_index,
                                                          new_mute_state ? 1 : 0,
