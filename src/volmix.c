@@ -57,11 +57,6 @@ static void on_app_volume_changed(GtkRange *range, gpointer user_data)
     }
 }
 
-static void on_close_button_clicked(GtkButton *button, gpointer user_data)
-{
-    volmix_app_t *app = (volmix_app_t *)user_data;
-    gtk_widget_hide(app->volmix_window);
-}
 
 static void build_volume_window(volmix_app_t *app)
 {
@@ -178,39 +173,14 @@ static void build_volume_window(volmix_app_t *app)
         }
         printf("Added %d applications to window\n", app_count);
         
-        // Add separator before quit
-        GtkWidget *separator2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_start(GTK_BOX(main_box), separator2, FALSE, FALSE, 1);
     }
     
-    // Add close and quit buttons
-    GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_box_pack_start(GTK_BOX(main_box), button_box, FALSE, FALSE, 0);
-    
-    GtkWidget *close_button = gtk_button_new_with_label("Close");
-    g_signal_connect(close_button, "clicked", G_CALLBACK(on_close_button_clicked), app);
-    gtk_box_pack_start(GTK_BOX(button_box), close_button, TRUE, TRUE, 0);
-    
-    GtkWidget *quit_button = gtk_button_new_with_label("Quit App");
-    g_signal_connect(quit_button, "clicked", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_box_pack_start(GTK_BOX(button_box), quit_button, TRUE, TRUE, 0);
-    
-    // Let user close window manually via quit button or window close button
+    // Window can be closed by clicking tray icon again or using window controls
 }
 
-static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data)
+static void position_window_near_cursor(GtkWindow *window)
 {
-    volmix_app_t *app = (volmix_app_t *)user_data;
-    
-    printf("Tray icon clicked! Building volume control window...\n");
-    
-    // Build the volume control window
-    build_volume_window(app);
-    
-    // Show the window first so GTK can calculate its size
-    gtk_widget_show_all(app->volmix_window);
-    
-    // Position the window near the mouse cursor after showing
+    // Position the window near the mouse cursor
     GdkDisplay *display = gdk_display_get_default();
     GdkSeat *seat = gdk_display_get_default_seat(display);
     GdkDevice *pointer = gdk_seat_get_pointer(seat);
@@ -221,7 +191,7 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
     
     // Get window size to position it properly
     gint width, height;
-    gtk_window_get_size(GTK_WINDOW(app->volmix_window), &width, &height);
+    gtk_window_get_size(window, &width, &height);
     
     // Position window so it appears near the cursor but doesn't go off screen
     x = x - width / 2;
@@ -240,7 +210,38 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
     if (y + height > screen_geometry.y + screen_geometry.height) 
         y = screen_geometry.y + screen_geometry.height - height;
     
-    gtk_window_move(GTK_WINDOW(app->volmix_window), x, y);
+    gtk_window_move(window, x, y);
+}
+
+static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data)
+{
+    volmix_app_t *app = (volmix_app_t *)user_data;
+    
+    // Check if window exists
+    if (app->volmix_window) {
+        if (gtk_widget_get_visible(app->volmix_window)) {
+            printf("Tray icon clicked! Hiding volume control window...\n");
+            gtk_widget_hide(app->volmix_window);
+            return;
+        } else {
+            printf("Tray icon clicked! Showing volume control window...\n");
+            gtk_widget_show_all(app->volmix_window);
+            position_window_near_cursor(GTK_WINDOW(app->volmix_window));
+            gtk_window_present(GTK_WINDOW(app->volmix_window));
+            return;
+        }
+    }
+    
+    printf("Tray icon clicked! Building volume control window...\n");
+    
+    // Build the volume control window
+    build_volume_window(app);
+    
+    // Show the window first so GTK can calculate its size
+    gtk_widget_show_all(app->volmix_window);
+    
+    // Position the window near the mouse cursor after showing
+    position_window_near_cursor(GTK_WINDOW(app->volmix_window));
     gtk_window_present(GTK_WINDOW(app->volmix_window));
 }
 
