@@ -3,7 +3,13 @@
 
 set -e
 
+# Parse command line arguments
+ARCHITECTURE="${1:-amd64}"
+BUILD_TYPE="${2:-release}"
+
 echo "Building volume Debian package..."
+echo "Architecture: $ARCHITECTURE"
+echo "Build Type: $BUILD_TYPE"
 
 # Build the Docker image
 echo "Building Docker image..."
@@ -18,7 +24,8 @@ docker run --rm \
     bash -c "dpkg-buildpackage -us -uc && cp ../*.deb . 2>/dev/null"
 
 # Check if any .deb files were generated
-if ls *.deb 1> /dev/null 2>&1; then
+debs=$(find_debs)
+if [ -n "$debs" ]; then
     echo "Package build complete!"
     echo "Generated files:"
     ls -la *.deb
