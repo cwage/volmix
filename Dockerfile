@@ -1,4 +1,4 @@
-# Dockerfile for building volume Debian package
+# Dockerfile for building volmix Debian package
 # This provides a clean environment with all necessary build dependencies
 
 FROM ubuntu:22.04

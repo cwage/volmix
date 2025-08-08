@@ -1,6 +1,6 @@
-bin_PROGRAMS = volume
+bin_PROGRAMS = volmix
 
-volume_SOURCES = volume.c pulse_client.c pulse_client.h
+volmix_SOURCES = volmix.c pulse_client.c pulse_client.h
 
-volume_CFLAGS = $(GTK_CFLAGS) $(PULSE_CFLAGS) $(GLIB_CFLAGS)
-volume_LDADD = $(GTK_LIBS) $(PULSE_LIBS) $(GLIB_LIBS)
+volmix_CFLAGS = $(GTK_CFLAGS) $(PULSE_CFLAGS) $(GLIB_CFLAGS)
+volmix_LDADD = $(GTK_LIBS) $(PULSE_LIBS) $(GLIB_LIBS)

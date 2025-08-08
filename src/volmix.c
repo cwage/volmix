@@ -13,17 +13,17 @@
 typedef struct {
     GtkWidget *tray_icon;
     GtkWidget *popup_menu;
-    GtkWidget *volume_window;
+    GtkWidget *volmix_window;
     pulse_client_t pulse_client;
-} volume_app_t;
+} volmix_app_t;
 
 // Structure for asynchronous PulseAudio processing
 typedef struct {
-    volume_app_t *app;
+    volmix_app_t *app;
     int count;
 } AsyncIterateData;
 
-static volume_app_t app_data;
+static volmix_app_t app_data;
 
 // Asynchronous callback for PulseAudio processing
 static gboolean async_iterate_callback(gpointer user_data)

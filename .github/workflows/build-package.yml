@@ -1,4 +1,4 @@
-name: Build Debian Package
+name: Build volmix Debian Package
 
 on:
   workflow_dispatch:
@@ -65,7 +65,7 @@ jobs:
     - name: Upload package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: debian-packages-${{ inputs.architecture }}-${{ inputs.build_type }}
+        name: volmix-packages-${{ inputs.architecture }}-${{ inputs.build_type }}
         path: |
           *.deb
           *.changes

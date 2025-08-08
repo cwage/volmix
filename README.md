@@ -1,4 +1,4 @@
-# Volume - Per-Application Audio Control
+# volmix - Per-Application Audio Control
 
 A lightweight system tray application for Linux that provides per-application volume control through PulseAudio. Inspired by `volumeicon` but extended to show individual audio streams from running applications.
 

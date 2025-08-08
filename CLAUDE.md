@@ -1,4 +1,4 @@
-# Volume - Per-Application Audio Control Tool
+# volmix - Per-Application Audio Control Tool
 
 ## Project Overview
 

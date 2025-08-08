@@ -1,4 +1,4 @@
-Source: volume
+Source: volmix
 Section: sound
 Priority: optional
 Maintainer: Chris Wage <cwage@quietlife.net>
@@ -9,11 +9,11 @@ Build-Depends: debhelper-compat (= 13),
                libpulse-dev,
                libglib2.0-dev
 Standards-Version: 4.6.0
-Homepage: https://github.com/cwage/volume
-Vcs-Git: https://github.com/cwage/volume.git
-Vcs-Browser: https://github.com/cwage/volume
+Homepage: https://github.com/cwage/volmix
+Vcs-Git: https://github.com/cwage/volmix.git
+Vcs-Browser: https://github.com/cwage/volmix
 
-Package: volume
+Package: volmix
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Per-application volume control for Linux
