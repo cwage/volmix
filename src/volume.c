@@ -57,9 +57,9 @@ static void setup_tray_icon(volume_app_t *app)
 {
     app->tray_icon = gtk_status_icon_new();
     
-    // Use a simple stock icon for now
-    gtk_status_icon_set_from_stock(GTK_STATUS_ICON(app->tray_icon), 
-                                  GTK_STOCK_MEDIA_PLAY);
+    // Use a standard icon name for volume
+    gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(app->tray_icon),
+                                      "audio-volume-high");
     
     gtk_status_icon_set_tooltip_text(GTK_STATUS_ICON(app->tray_icon), 
                                     "Volume - Per-Application Audio Control");
