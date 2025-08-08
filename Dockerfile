@@ -28,16 +28,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /build
+WORKDIR /src
 
-# Copy project files
-COPY . .
-
-# Build the Debian package
-RUN dpkg-buildpackage -us -uc
-
-# List the generated packages
-RUN ls -la ../*.deb ../*.changes ../*.buildinfo 2>/dev/null || echo "Package files generated in parent directory"
-
-# Keep container running for inspection
+# Default command for interactive use
 CMD ["/bin/bash"]
