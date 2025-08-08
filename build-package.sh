@@ -24,7 +24,7 @@ docker run --rm \
     bash -c "dpkg-buildpackage -us -uc && cp ../*.deb . 2>/dev/null"
 
 # Check if any .deb files were generated
-debs=$(find_debs)
+debs=$(find . -maxdepth 1 -type f -name '*.deb')
 if [ -n "$debs" ]; then
     echo "Package build complete!"
     echo "Generated files:"
