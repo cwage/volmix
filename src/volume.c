@@ -108,11 +108,11 @@ static void build_volume_window(volume_app_t *app)
     gtk_window_set_skip_taskbar_hint(GTK_WINDOW(app->volume_window), FALSE);
     gtk_window_set_skip_pager_hint(GTK_WINDOW(app->volume_window), FALSE);
     gtk_window_set_type_hint(GTK_WINDOW(app->volume_window), GDK_WINDOW_TYPE_HINT_DIALOG);
-    gtk_window_set_default_size(GTK_WINDOW(app->volume_window), 300, 400);
+    gtk_window_set_resizable(GTK_WINDOW(app->volume_window), FALSE);
     
-    // Create main container
-    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-    gtk_container_set_border_width(GTK_CONTAINER(main_box), 10);
+    // Create main container with minimal spacing
+    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+    gtk_container_set_border_width(GTK_CONTAINER(main_box), 4);
     gtk_container_add(GTK_CONTAINER(app->volume_window), main_box);
     
     if (apps == NULL) {
@@ -127,7 +127,7 @@ static void build_volume_window(volume_app_t *app)
         
         // Add separator
         GtkWidget *separator1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_start(GTK_BOX(main_box), separator1, FALSE, FALSE, 5);
+        gtk_box_pack_start(GTK_BOX(main_box), separator1, FALSE, FALSE, 1);
         
         // Add application volume controls
         GtkWidget *apps_label = gtk_label_new("Applications");
@@ -142,9 +142,9 @@ static void build_volume_window(volume_app_t *app)
             app_count++;
             printf("Adding app %d: %s\n", app_count, audio_app->name);
             
-            // Create container for this app
-            GtkWidget *app_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-            gtk_box_pack_start(GTK_BOX(main_box), app_box, FALSE, FALSE, 5);
+            // Create container for this app with minimal spacing
+            GtkWidget *app_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
+            gtk_box_pack_start(GTK_BOX(main_box), app_box, FALSE, FALSE, 1);
             
             // Application name label
             char label_text[256];
@@ -159,7 +159,7 @@ static void build_volume_window(volume_app_t *app)
             gtk_range_set_value(GTK_RANGE(slider), app_audio_get_volume_percent(audio_app));
             gtk_scale_set_draw_value(GTK_SCALE(slider), TRUE);
             gtk_scale_set_value_pos(GTK_SCALE(slider), GTK_POS_RIGHT);
-            gtk_widget_set_size_request(slider, 200, -1);
+            gtk_widget_set_size_request(slider, 160, 20);
             
             // Store the sink input index for the callback
             uint32_t *index_ptr = g_malloc(sizeof(uint32_t));
@@ -180,11 +180,11 @@ static void build_volume_window(volume_app_t *app)
         
         // Add separator before quit
         GtkWidget *separator2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_start(GTK_BOX(main_box), separator2, FALSE, FALSE, 5);
+        gtk_box_pack_start(GTK_BOX(main_box), separator2, FALSE, FALSE, 1);
     }
     
     // Add close and quit buttons
-    GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    GtkWidget *button_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(main_box), button_box, FALSE, FALSE, 0);
     
     GtkWidget *close_button = gtk_button_new_with_label("Close");
