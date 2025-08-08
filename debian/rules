@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # Debian packaging rules for volume
-# Uses debhelper and autotools
+# Uses modern debhelper with autoreconf
 
 # Enable all hardening features
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
@@ -10,22 +10,18 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 #export DH_VERBOSE=1
 
 %:
-	dh $@ --with autotools-dev
+	dh $@ --with autoreconf
 
 override_dh_auto_configure:
-	./autogen.sh
-	dh_auto_configure
+	dh_auto_configure -- --prefix=/usr
 
 override_dh_auto_clean:
-	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.h.in~
-	rm -rf autom4te.cache
 	dh_auto_clean
+	rm -f config.h.in~
 
 # Install the binary to the correct location
 override_dh_auto_install:
 	dh_auto_install
-	# The binary should be installed to /usr/bin/ by make install
 
 # Add manual pages if they exist (currently none)
 # override_dh_installman:

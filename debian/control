@@ -3,10 +3,7 @@ Section: sound
 Priority: optional
 Maintainer: Chris Wage <noreply@example.com>
 Build-Depends: debhelper-compat (= 13),
-               autotools-dev,
-               build-essential,
-               autoconf,
-               automake,
+               dh-autoreconf,
                pkg-config,
                libgtk-3-dev,
                libpulse-dev,
