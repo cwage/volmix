@@ -202,6 +202,13 @@ static void on_tray_icon_activate(GtkStatusIcon *status_icon, gpointer user_data
 {
     volmix_app_t *app = (volmix_app_t *)user_data;
     
+    // Check if window exists and is visible
+    if (app->volmix_window && gtk_widget_get_visible(app->volmix_window)) {
+        printf("Tray icon clicked! Hiding volume control window...\n");
+        gtk_widget_hide(app->volmix_window);
+        return;
+    }
+    
     printf("Tray icon clicked! Building volume control window...\n");
     
     // Build the volume control window
