@@ -4,6 +4,15 @@
 #include <pulse/pulseaudio.h>
 #include <glib.h>
 
+// Structure to represent an audio application (sink input)
+typedef struct {
+    uint32_t index;           // PulseAudio sink input index
+    char *name;               // Application name
+    char *process_name;       // Process name for icon lookup
+    pa_cvolume volume;        // Current volume levels
+    gboolean muted;           // Mute state
+} app_audio_t;
+
 typedef struct {
     pa_mainloop *mainloop;
     pa_mainloop_api *mainloop_api;
@@ -13,6 +22,7 @@ typedef struct {
     uint32_t default_sink_index;
     pa_cvolume default_sink_volume;
     gboolean default_sink_muted;
+    GList *audio_apps;        // List of app_audio_t
 } pulse_client_t;
 
 // Initialize PulseAudio client
@@ -44,5 +54,17 @@ gboolean pulse_client_toggle_master_mute(pulse_client_t *client);
 
 // Process PulseAudio events (call periodically)
 void pulse_client_iterate(pulse_client_t *client);
+
+// Application management functions
+void pulse_client_refresh_apps(pulse_client_t *client);
+GList* pulse_client_get_apps(pulse_client_t *client);
+gboolean pulse_client_set_app_volume(pulse_client_t *client, uint32_t sink_input_index, int volume);
+gboolean pulse_client_toggle_app_mute(pulse_client_t *client, uint32_t sink_input_index);
+
+// Helper functions for app_audio_t
+app_audio_t* app_audio_new(uint32_t index, const char *name, const char *process_name, 
+                          const pa_cvolume *volume, gboolean muted);
+void app_audio_free(app_audio_t *app);
+int app_audio_get_volume_percent(const app_audio_t *app);
 
 #endif // PULSE_CLIENT_H
