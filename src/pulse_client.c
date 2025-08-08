@@ -473,8 +473,8 @@ pa_volume_t pulse_client_percent_to_pa_volume(int volume_percent)
     if (volume_percent < 0) volume_percent = 0;
     if (volume_percent > 100) volume_percent = 100;
     
-    // Convert percentage to PulseAudio volume with floating-point precision
-    return (pa_volume_t)((volume_percent * PA_VOLUME_NORM) / 100.0);
+    // Convert percentage to PulseAudio volume using integer arithmetic
+    return (pa_volume_t)((volume_percent * PA_VOLUME_NORM) / 100);
 }
 
 static void sink_input_info_callback(pa_context *c, const pa_sink_input_info *info, int eol, void *userdata)
