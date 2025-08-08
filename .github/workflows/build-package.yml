@@ -41,21 +41,22 @@ jobs:
         echo "Building Debian package for ${{ inputs.architecture }}"
         echo "Build type: ${{ inputs.build_type }}"
         
-        # Use our existing build script
+        # Use our existing build script with parameters
         chmod +x build-package.sh
-        ./build-package.sh
+        ./build-package.sh "${{ inputs.architecture }}" "${{ inputs.build_type }}"
         
     - name: Verify package creation
       run: |
         echo "Checking for generated .deb packages..."
-        ls -la *.deb || {
+        debs=$(find . -maxdepth 1 -type f -name '*.deb')
+        if [ -z "$debs" ]; then
           echo "ERROR: No .deb packages found!"
           exit 1
-        }
+        fi
         
         # Show package info
         echo "Package details:"
-        for deb in *.deb; do
+        for deb in $debs; do
           echo "=== $deb ==="
           dpkg --info "$deb"
           echo
@@ -83,9 +84,14 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Generated Packages" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        for deb in *.deb; do
-          size=$(ls -lh "$deb" | awk '{print $5}')
-          echo "- \`$deb\` ($size)" >> $GITHUB_STEP_SUMMARY
-        done
+        debs=( *.deb )
+        if [ -e "${debs[0]}" ]; then
+          for deb in "${debs[@]}"; do
+            size=$(ls -lh "$deb" | awk '{print $5}')
+            echo "- \`$deb\` ($size)" >> $GITHUB_STEP_SUMMARY
+          done
+        else
+          echo "_No .deb packages generated._" >> $GITHUB_STEP_SUMMARY
+        fi
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "📥 Download artifacts from the Actions tab above." >> $GITHUB_STEP_SUMMARY
