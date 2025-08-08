@@ -1,0 +1,181 @@
+name: Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v1.0.1, etc.
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get tag version
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Building release for version: $VERSION"
+        
+        # Determine if this is a prerelease based on version format
+        if [[ "$VERSION" =~ -[a-zA-Z] ]]; then
+          echo "PRERELEASE=true" >> $GITHUB_OUTPUT
+        else
+          echo "PRERELEASE=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    # Build packages for multiple architectures in parallel
+    - name: Build amd64 package
+      run: |
+        echo "Building amd64 package..."
+        chmod +x build-package.sh
+        ./build-package.sh "amd64" "release"
+        mkdir -p packages/amd64
+        
+        # Move build artifacts with proper error handling
+        shopt -s nullglob
+        files=( *.deb *.changes *.buildinfo )
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "ERROR: No build artifacts (*.deb, *.changes, *.buildinfo) found for amd64." >&2
+          exit 1
+        fi
+        mv "${files[@]}" packages/amd64/
+        shopt -u nullglob
+        
+    - name: Build arm64 package  
+      run: |
+        echo "Building arm64 package..."
+        ./build-package.sh "arm64" "release"
+        mkdir -p packages/arm64
+        
+        # Move build artifacts with proper error handling
+        shopt -s nullglob
+        files=( *.deb *.changes *.buildinfo )
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "ERROR: No build artifacts (*.deb, *.changes, *.buildinfo) found for arm64." >&2
+          exit 1
+        fi
+        mv "${files[@]}" packages/arm64/
+        shopt -u nullglob
+        
+    - name: Collect all packages
+      run: |
+        echo "Collecting all built packages..."
+        mkdir -p release-packages
+        find packages/ -name "*.deb" -exec cp {} release-packages/ \;
+        find packages/ -name "*.changes" -exec cp {} release-packages/ \;
+        find packages/ -name "*.buildinfo" -exec cp {} release-packages/ \;
+        
+        echo "Final package list:"
+        ls -la release-packages/
+        
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        VERSION="${{ steps.get_version.outputs.VERSION }}"
+        BUILD_DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        
+        # Count packages and get architectures
+        DEB_COUNT=$(find release-packages/ -name "*.deb" -type f | wc -l)
+        ARCHS=""
+        
+        for deb in release-packages/*.deb; do
+          if [ -f "$deb" ]; then
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "WARNING: Failed to get architecture for $deb, using 'unknown'"
+              arch="unknown"
+            fi
+            if [[ ! "$ARCHS" =~ $arch ]]; then
+              ARCHS="$ARCHS $arch"
+            fi
+          fi
+        done
+        ARCHS=$(echo "$ARCHS" | xargs)
+        
+        cat > release_notes.md << EOF
+        # volmix $VERSION
+        
+        Per-application audio control tool for Linux using PulseAudio.
+        
+        ## 📦 Package Information
+        - **Build Date**: $BUILD_DATE
+        - **Architectures**: $ARCHS
+        - **Packages**: $DEB_COUNT .deb files
+        
+        ## 📥 Installation
+        
+        ### Debian/Ubuntu:
+        \`\`\`bash
+        # Download the appropriate package for your architecture
+        wget https://github.com/cwage/volmix/releases/download/$VERSION/volmix_*_<arch>.deb
+        
+        # Install the package
+        sudo dpkg -i volmix_*_<arch>.deb
+        
+        # Install any missing dependencies
+        sudo apt-get install -f
+        \`\`\`
+        
+        ### Available Downloads:
+        EOF
+        
+        # Add download information for each package
+        for deb in release-packages/*.deb; do
+          if [ -f "$deb" ]; then
+            basename_deb=$(basename "$deb")
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "- **Unknown Architecture**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/$VERSION/$basename_deb) (Error reading architecture)" >> release_notes.md
+            else
+              size=$(ls -lh "$deb" | awk '{print $5}')
+              echo "- **$arch**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/$VERSION/$basename_deb) ($size)" >> release_notes.md
+            fi
+          fi
+        done
+        
+        cat >> release_notes.md << EOF
+        
+        ## 🚀 Features
+        - System tray integration with per-app volume control
+        - Toggle popup window by clicking tray icon
+        - Mouse wheel volume control on tray icon
+        - Clean, streamlined interface
+        - Real-time audio stream detection
+        
+        ## 🛠️ Requirements  
+        - PulseAudio
+        - GTK3
+        - Linux desktop environment with system tray support
+        
+        ## 🐛 Issues & Support
+        Report bugs: https://github.com/cwage/volmix/issues
+        EOF
+        
+        echo "Generated release notes:"
+        cat release_notes.md
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        name: volmix ${{ steps.get_version.outputs.VERSION }}
+        body_path: release_notes.md
+        prerelease: ${{ steps.get_version.outputs.PRERELEASE }}
+        files: |
+          release-packages/*.deb
+          release-packages/*.changes
+          release-packages/*.buildinfo
+        fail_on_unmatched_files: false
+        generate_release_notes: false
+        make_latest: ${{ steps.get_version.outputs.PRERELEASE == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
