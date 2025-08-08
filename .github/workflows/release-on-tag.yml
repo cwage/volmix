@@ -39,14 +39,32 @@ jobs:
         chmod +x build-package.sh
         ./build-package.sh "amd64" "release"
         mkdir -p packages/amd64
-        mv *.deb *.changes *.buildinfo packages/amd64/ 2>/dev/null || true
+        
+        # Move build artifacts with proper error handling
+        shopt -s nullglob
+        files=( *.deb *.changes *.buildinfo )
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "ERROR: No build artifacts (*.deb, *.changes, *.buildinfo) found for amd64." >&2
+          exit 1
+        fi
+        mv "${files[@]}" packages/amd64/
+        shopt -u nullglob
         
     - name: Build arm64 package  
       run: |
         echo "Building arm64 package..."
         ./build-package.sh "arm64" "release"
         mkdir -p packages/arm64
-        mv *.deb *.changes *.buildinfo packages/arm64/ 2>/dev/null || true
+        
+        # Move build artifacts with proper error handling
+        shopt -s nullglob
+        files=( *.deb *.changes *.buildinfo )
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "ERROR: No build artifacts (*.deb, *.changes, *.buildinfo) found for arm64." >&2
+          exit 1
+        fi
+        mv "${files[@]}" packages/arm64/
+        shopt -u nullglob
         
     - name: Collect all packages
       run: |
@@ -71,7 +89,11 @@ jobs:
         
         for deb in release-packages/*.deb; do
           if [ -f "$deb" ]; then
-            arch=$(dpkg-deb -f "$deb" Architecture || echo "unknown")
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "WARNING: Failed to get architecture for $deb, using 'unknown'"
+              arch="unknown"
+            fi
             if [[ ! "$ARCHS" =~ $arch ]]; then
               ARCHS="$ARCHS $arch"
             fi
@@ -110,9 +132,13 @@ jobs:
         for deb in release-packages/*.deb; do
           if [ -f "$deb" ]; then
             basename_deb=$(basename "$deb")
-            arch=$(dpkg-deb -f "$deb" Architecture || echo "unknown")
-            size=$(ls -lh "$deb" | awk '{print $5}')
-            echo "- **$arch**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/$VERSION/$basename_deb) ($size)" >> release_notes.md
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "- **Unknown Architecture**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/$VERSION/$basename_deb) (Error reading architecture)" >> release_notes.md
+            else
+              size=$(ls -lh "$deb" | awk '{print $5}')
+              echo "- **$arch**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/$VERSION/$basename_deb) ($size)" >> release_notes.md
+            fi
           fi
         done
         

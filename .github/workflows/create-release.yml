@@ -21,9 +21,9 @@ on:
         default: false
         type: boolean
       architectures:
-        description: 'Architectures to build (space-separated)'
+        description: 'Architectures to build (comma-separated)'
         required: false
-        default: 'amd64 arm64'
+        default: 'amd64,arm64'
         type: string
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        architecture: ${{ fromJSON('["' + join(split(inputs.architectures, ' '), '","') + '"]') }}
+        architecture: ${{ fromJSON(format('["{0}"]', join(split(inputs.architectures, ','), '","'))) }}
     
     steps:
     - name: Checkout code
@@ -115,7 +115,11 @@ jobs:
         ARCHS=""
         for deb in ./packages/*.deb; do
           if [ -f "$deb" ]; then
-            arch=$(dpkg-deb -f "$deb" Architecture)
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "WARNING: Failed to get architecture for $deb, skipping."
+              continue
+            fi
             if [[ ! "$ARCHS" =~ $arch ]]; then
               ARCHS="$ARCHS $arch"
             fi
@@ -156,9 +160,13 @@ jobs:
         for deb in ./packages/*.deb; do
           if [ -f "$deb" ]; then
             basename_deb=$(basename "$deb")
-            arch=$(dpkg-deb -f "$deb" Architecture)
-            size=$(ls -lh "$deb" | awk '{print $5}')
-            echo "- **$arch**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/${{ inputs.version }}/$basename_deb) ($size)" >> release_notes.md
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "- **Unknown Architecture**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/${{ inputs.version }}/$basename_deb) (Error reading architecture)" >> release_notes.md
+            else
+              size=$(ls -lh "$deb" | awk '{print $5}')
+              echo "- **$arch**: [\`$basename_deb\`](https://github.com/cwage/volmix/releases/download/${{ inputs.version }}/$basename_deb) ($size)" >> release_notes.md
+            fi
           fi
         done
         
@@ -208,7 +216,11 @@ jobs:
         for deb in ./packages/*.deb; do
           if [ -f "$deb" ]; then
             basename_deb=$(basename "$deb")
-            arch=$(dpkg-deb -f "$deb" Architecture)
+            arch=$(dpkg-deb -f "$deb" Architecture 2>/dev/null)
+            if [ $? -ne 0 ] || [ -z "$arch" ]; then
+              echo "⚠️ Warning: Failed to extract architecture from $basename_deb" >> $GITHUB_STEP_SUMMARY
+              arch="unknown"
+            fi
             size=$(ls -lh "$deb" | awk '{print $5}')
             echo "- **$arch**: \`$basename_deb\` ($size)" >> $GITHUB_STEP_SUMMARY
           fi
