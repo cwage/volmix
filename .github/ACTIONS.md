@@ -1,6 +1,6 @@
 # GitHub Actions Documentation
 
-## Build Debian Package Action
+## Build volmix Debian Package Action
 
 This repository includes a GitHub Action that builds Debian packages using our Docker-based build system.
 
@@ -11,7 +11,7 @@ The action can be triggered manually from the GitHub web interface:
 1. **Navigate to Actions Tab**
    - Go to your repository on GitHub
    - Click the "Actions" tab
-   - Select "Build Debian Package" workflow
+   - Select "Build volmix Debian Package" workflow
 
 2. **Run Workflow**
    - Click "Run workflow" button
@@ -32,12 +32,12 @@ After a successful build:
 1. **From GitHub Web Interface**
    - Go to the completed workflow run
    - Scroll to "Artifacts" section
-   - Click to download `debian-packages-{arch}-{type}.zip`
+   - Click to download `volmix-packages-{arch}-{type}.zip`
 
 2. **Using GitHub CLI**
    ```bash
    # List recent runs
-   gh run list --workflow="Build Debian Package"
+   gh run list --workflow="Build volmix Debian Package"
    
    # Download artifacts from specific run
    gh run download <run-id>
@@ -46,10 +46,10 @@ After a successful build:
 3. **Extract and Install**
    ```bash
    # Extract the zip file
-   unzip debian-packages-amd64-release.zip
+   unzip volmix-packages-amd64-release.zip
    
    # Install the package
-   sudo dpkg -i volume_*.deb
+   sudo dpkg -i volmix_*.deb
    ```
 
 ### Build Features

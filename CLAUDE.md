@@ -1,4 +1,4 @@
-# Volume - Per-Application Audio Control Tool
+# volmix - Per-Application Audio Control Tool
 
 ## Project Overview
 
@@ -27,7 +27,7 @@ A lightweight system tray application for Linux that provides per-application vo
 ## Architecture Design
 
 ### Core Components
-1. **Main Application (`volume.c`)**
+1. **Main Application (`volmix.c`)**
    - GTK application initialization
    - System tray icon management
    - Event loop and signal handling
@@ -64,7 +64,7 @@ typedef struct {
     GtkWidget *tray_icon;     // System tray icon
     GtkWidget *popup_menu;    // Application list menu
     GList *audio_apps;        // List of app_audio_t
-} volume_app_t;
+} volmix_app_t;
 ```
 
 ## Dependencies
@@ -96,9 +96,9 @@ sudo make install
 
 ## Project Structure
 ```
-volume/
+volmix/
 ├── src/
-│   ├── volume.c          # Main application
+│   ├── volmix.c          # Main application
 │   ├── pulse_client.c    # PulseAudio integration
 │   ├── pulse_client.h
 │   ├── gui.c            # GUI management
@@ -138,7 +138,7 @@ volume/
 - Manual testing across desktop environments
 - Memory leak detection with valgrind
 - PulseAudio connection stability testing
-- **Important**: Always test GUI applications with `&` to run in background (e.g. `./src/volume &`) to prevent CLI hanging
+- **Important**: Always test GUI applications with `&` to run in background (e.g. `./src/volmix &`) to prevent CLI hanging
 
 ### Documentation
 - Inline code documentation

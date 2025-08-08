@@ -33,7 +33,7 @@ gboolean pulse_client_init(pulse_client_t *client)
     }
     
     // Create context
-    client->context = pa_context_new(client->mainloop_api, "Volume Control");
+    client->context = pa_context_new(client->mainloop_api, "volmix");
     if (!client->context) {
         printf("Failed to create PulseAudio context\n");
         pulse_client_cleanup(client);

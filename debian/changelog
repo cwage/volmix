@@ -1,4 +1,4 @@
-volume (1.0.0-1) unstable; urgency=medium
+volmix (1.0.0-1) unstable; urgency=medium
 
   * Initial release of per-application volume control tool
   * System tray integration with mouse wheel support

@@ -70,10 +70,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/volume
-pkgincludedir = $(includedir)/volume
-pkglibdir = $(libdir)/volume
-pkglibexecdir = $(libexecdir)/volume
+pkgdatadir = $(datadir)/volmix
+pkgincludedir = $(includedir)/volmix
+pkglibdir = $(libdir)/volmix
+pkglibexecdir = $(libexecdir)/volmix
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = volume$(EXEEXT)
+bin_PROGRAMS = volmix$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -99,13 +99,13 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_volume_OBJECTS = volume-volume.$(OBJEXT) \
-	volume-pulse_client.$(OBJEXT)
-volume_OBJECTS = $(am_volume_OBJECTS)
+am_volmix_OBJECTS = volmix-volmix.$(OBJEXT) \
+	volmix-pulse_client.$(OBJEXT)
+volmix_OBJECTS = $(am_volmix_OBJECTS)
 am__DEPENDENCIES_1 =
-volume_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+volmix_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-volume_LINK = $(CCLD) $(volume_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+volmix_LINK = $(CCLD) $(volmix_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
@@ -122,8 +122,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/volume-pulse_client.Po \
-	./$(DEPDIR)/volume-volume.Po
+am__depfiles_remade = ./$(DEPDIR)/volmix-pulse_client.Po \
+	./$(DEPDIR)/volmix-volmix.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -141,8 +141,8 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(volume_SOURCES)
-DIST_SOURCES = $(volume_SOURCES)
+SOURCES = $(volmix_SOURCES)
+DIST_SOURCES = $(volmix_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -204,11 +204,11 @@ LTLIBOBJS =
 MAKEINFO = ${SHELL} '/home/cwage/git/cwage/volume/missing' makeinfo
 MKDIR_P = /usr/bin/mkdir -p
 OBJEXT = o
-PACKAGE = volume
+PACKAGE = volmix
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = volume
-PACKAGE_STRING = volume 0.1.0
-PACKAGE_TARNAME = volume
+PACKAGE_NAME = volmix
+PACKAGE_STRING = volmix 0.1.0
+PACKAGE_TARNAME = volmix
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.1.0
 PATH_SEPARATOR = :
@@ -252,7 +252,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 runstatedir = ${localstatedir}/run
@@ -264,9 +264,9 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-volume_SOURCES = volume.c pulse_client.c pulse_client.h
-volume_CFLAGS = $(GTK_CFLAGS) $(PULSE_CFLAGS) $(GLIB_CFLAGS)
-volume_LDADD = $(GTK_LIBS) $(PULSE_LIBS) $(GLIB_LIBS)
+volmix_SOURCES = volmix.c pulse_client.c pulse_client.h
+volmix_CFLAGS = $(GTK_CFLAGS) $(PULSE_CFLAGS) $(GLIB_CFLAGS)
+volmix_LDADD = $(GTK_LIBS) $(PULSE_LIBS) $(GLIB_LIBS)
 all: all-am
 
 .SUFFIXES:
@@ -343,9 +343,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-volume$(EXEEXT): $(volume_OBJECTS) $(volume_DEPENDENCIES) $(EXTRA_volume_DEPENDENCIES) 
-	@rm -f volume$(EXEEXT)
-	$(AM_V_CCLD)$(volume_LINK) $(volume_OBJECTS) $(volume_LDADD) $(LIBS)
+volmix$(EXEEXT): $(volmix_OBJECTS) $(volmix_DEPENDENCIES) $(EXTRA_volmix_DEPENDENCIES) 
+	@rm -f volmix$(EXEEXT)
+	$(AM_V_CCLD)$(volmix_LINK) $(volmix_OBJECTS) $(volmix_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -353,8 +353,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/volume-pulse_client.Po # am--include-marker
-include ./$(DEPDIR)/volume-volume.Po # am--include-marker
+include ./$(DEPDIR)/volmix-pulse_client.Po # am--include-marker
+include ./$(DEPDIR)/volmix-volmix.Po # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -376,33 +376,33 @@ am--depfiles: $(am__depfiles_remade)
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-volume-volume.o: volume.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-volume.o -MD -MP -MF $(DEPDIR)/volume-volume.Tpo -c -o volume-volume.o `test -f 'volume.c' || echo '$(srcdir)/'`volume.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-volume.Tpo $(DEPDIR)/volume-volume.Po
-#	$(AM_V_CC)source='volume.c' object='volume-volume.o' libtool=no \
+volmix-volmix.o: volmix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -MT volmix-volmix.o -MD -MP -MF $(DEPDIR)/volmix-volmix.Tpo -c -o volmix-volmix.o `test -f 'volmix.c' || echo '$(srcdir)/'`volmix.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volmix-volmix.Tpo $(DEPDIR)/volmix-volmix.Po
+#	$(AM_V_CC)source='volmix.c' object='volmix-volmix.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-volume.o `test -f 'volume.c' || echo '$(srcdir)/'`volume.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -c -o volmix-volmix.o `test -f 'volmix.c' || echo '$(srcdir)/'`volmix.c
 
-volume-volume.obj: volume.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-volume.obj -MD -MP -MF $(DEPDIR)/volume-volume.Tpo -c -o volume-volume.obj `if test -f 'volume.c'; then $(CYGPATH_W) 'volume.c'; else $(CYGPATH_W) '$(srcdir)/volume.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-volume.Tpo $(DEPDIR)/volume-volume.Po
-#	$(AM_V_CC)source='volume.c' object='volume-volume.obj' libtool=no \
+volmix-volmix.obj: volmix.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -MT volmix-volmix.obj -MD -MP -MF $(DEPDIR)/volmix-volmix.Tpo -c -o volmix-volmix.obj `if test -f 'volmix.c'; then $(CYGPATH_W) 'volmix.c'; else $(CYGPATH_W) '$(srcdir)/volmix.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volmix-volmix.Tpo $(DEPDIR)/volmix-volmix.Po
+#	$(AM_V_CC)source='volmix.c' object='volmix-volmix.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-volume.obj `if test -f 'volume.c'; then $(CYGPATH_W) 'volume.c'; else $(CYGPATH_W) '$(srcdir)/volume.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -c -o volmix-volmix.obj `if test -f 'volmix.c'; then $(CYGPATH_W) 'volmix.c'; else $(CYGPATH_W) '$(srcdir)/volmix.c'; fi`
 
-volume-pulse_client.o: pulse_client.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-pulse_client.o -MD -MP -MF $(DEPDIR)/volume-pulse_client.Tpo -c -o volume-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-pulse_client.Tpo $(DEPDIR)/volume-pulse_client.Po
-#	$(AM_V_CC)source='pulse_client.c' object='volume-pulse_client.o' libtool=no \
+volmix-pulse_client.o: pulse_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -MT volmix-pulse_client.o -MD -MP -MF $(DEPDIR)/volmix-pulse_client.Tpo -c -o volmix-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volmix-pulse_client.Tpo $(DEPDIR)/volmix-pulse_client.Po
+#	$(AM_V_CC)source='pulse_client.c' object='volmix-pulse_client.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -c -o volmix-pulse_client.o `test -f 'pulse_client.c' || echo '$(srcdir)/'`pulse_client.c
 
-volume-pulse_client.obj: pulse_client.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -MT volume-pulse_client.obj -MD -MP -MF $(DEPDIR)/volume-pulse_client.Tpo -c -o volume-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/volume-pulse_client.Tpo $(DEPDIR)/volume-pulse_client.Po
-#	$(AM_V_CC)source='pulse_client.c' object='volume-pulse_client.obj' libtool=no \
+volmix-pulse_client.obj: pulse_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -MT volmix-pulse_client.obj -MD -MP -MF $(DEPDIR)/volmix-pulse_client.Tpo -c -o volmix-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/volmix-pulse_client.Tpo $(DEPDIR)/volmix-pulse_client.Po
+#	$(AM_V_CC)source='pulse_client.c' object='volmix-pulse_client.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volume_CFLAGS) $(CFLAGS) -c -o volume-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(volmix_CFLAGS) $(CFLAGS) -c -o volmix-pulse_client.obj `if test -f 'pulse_client.c'; then $(CYGPATH_W) 'pulse_client.c'; else $(CYGPATH_W) '$(srcdir)/pulse_client.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -530,8 +530,8 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/volume-pulse_client.Po
-	-rm -f ./$(DEPDIR)/volume-volume.Po
+		-rm -f ./$(DEPDIR)/volmix-pulse_client.Po
+	-rm -f ./$(DEPDIR)/volmix-volmix.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -577,8 +577,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/volume-pulse_client.Po
-	-rm -f ./$(DEPDIR)/volume-volume.Po
+		-rm -f ./$(DEPDIR)/volmix-pulse_client.Po
+	-rm -f ./$(DEPDIR)/volmix-volmix.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

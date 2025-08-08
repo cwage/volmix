@@ -1,4 +1,4 @@
-# Volume - Per-Application Audio Control
+# volmix - Per-Application Audio Control
 
 A lightweight system tray application for Linux that provides per-application volume control through PulseAudio. Inspired by `volumeicon` but extended to show individual audio streams from running applications.
 
@@ -55,12 +55,12 @@ sudo apt install build-essential autotools-dev autoconf automake \
 
 ### Running from Build Directory
 ```bash
-./src/volume &
+./src/volmix &
 ```
 
 ### Running after Installation
 ```bash
-volume &
+volmix &
 ```
 
 The `&` runs the application in the background, allowing you to continue using the terminal.
@@ -95,12 +95,12 @@ The project uses standard autotools build system and follows C coding convention
 
 Always test GUI applications in background mode to prevent terminal hanging:
 ```bash
-./src/volume &
+./src/volmix &
 ```
 
 To stop the application:
 ```bash
-pkill volume
+pkill volmix
 ```
 
 ## License

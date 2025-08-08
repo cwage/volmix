@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build script for volume Debian package using Docker
+# Build script for volmix Debian package using Docker
 
 set -e
 
@@ -7,20 +7,23 @@ set -e
 ARCHITECTURE="${1:-amd64}"
 BUILD_TYPE="${2:-release}"
 
-echo "Building volume Debian package..."
+echo "Building volmix Debian package..."
 echo "Architecture: $ARCHITECTURE"
 echo "Build Type: $BUILD_TYPE"
 
-# Build the Docker image
+# Build the Docker image with current user's UID/GID
 echo "Building Docker image..."
-docker build -t volume-builder .
+docker build \
+    --build-arg USER_ID=$(id -u) \
+    --build-arg GROUP_ID=$(id -g) \
+    -t volmix-builder .
 
 # Run the build with volume mount to output packages to current directory
 echo "Running package build..."
 docker run --rm \
     -v "$(pwd):/src" \
     -w /src \
-    volume-builder \
+    volmix-builder \
     bash -c "dpkg-buildpackage -us -uc && cp ../*.deb . 2>/dev/null"
 
 # Check if any .deb files were generated

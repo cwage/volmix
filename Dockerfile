@@ -1,4 +1,4 @@
-# Dockerfile for building volume Debian package
+# Dockerfile for building volmix Debian package
 # This provides a clean environment with all necessary build dependencies
 
 FROM ubuntu:22.04
@@ -26,6 +26,17 @@ RUN apt-get update && apt-get install -y \
     # Utilities
     git \
     && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user for building
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g ${GROUP_ID} builder && \
+    useradd -u ${USER_ID} -g builder -m builder && \
+    mkdir -p /src && \
+    chown builder:builder /src
+
+# Switch to non-root user
+USER builder
 
 # Set working directory
 WORKDIR /src
