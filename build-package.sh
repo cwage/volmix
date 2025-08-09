@@ -27,8 +27,11 @@ if [ -z "$PACKAGE_NAME" ]; then
 fi
 
 # Get maintainer info from environment or extract from existing changelog
-MAINTAINER_NAME="${MAINTAINER_NAME:-$(grep "^ --" debian/changelog 2>/dev/null | head -1 | sed 's/^ -- \([^<]*\) <.*/\1/' | xargs)}"
-MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-$(grep "^ --" debian/changelog 2>/dev/null | head -1 | sed 's/.*<\([^>]*\)>.*/\1/')}"
+MAINTAINER_LINE=$(grep "^ --" debian/changelog 2>/dev/null | head -1)
+if [[ "$MAINTAINER_LINE" =~ ^\ \-\-\ ([^<]+)\ <([^>]+)> ]]; then
+    MAINTAINER_NAME="${MAINTAINER_NAME:-${BASH_REMATCH[1]}}"
+    MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-${BASH_REMATCH[2]}}"
+fi
 
 # Fallback to defaults if extraction fails
 MAINTAINER_NAME="${MAINTAINER_NAME:-Chris Wage}"
