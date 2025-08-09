@@ -19,20 +19,35 @@ else
 fi
 echo "Version: $VERSION"
 
+# Extract package name from debian/control
+PACKAGE_NAME=$(grep "^Source:" debian/control | cut -d' ' -f2)
+if [ -z "$PACKAGE_NAME" ]; then
+    echo "ERROR: Could not extract package name from debian/control"
+    exit 1
+fi
+
+# Get maintainer info from environment or extract from existing changelog
+MAINTAINER_NAME="${MAINTAINER_NAME:-$(grep "^ --" debian/changelog 2>/dev/null | head -1 | sed 's/^ -- \([^<]*\) <.*/\1/' | xargs)}"
+MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-$(grep "^ --" debian/changelog 2>/dev/null | head -1 | sed 's/.*<\([^>]*\)>.*/\1/')}"
+
+# Fallback to defaults if extraction fails
+MAINTAINER_NAME="${MAINTAINER_NAME:-Chris Wage}"
+MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-cwage@quietlife.net}"
+
 # Update debian/changelog with current version
-CHANGELOG_ENTRY="volmix ($VERSION-1) unstable; urgency=medium
+CHANGELOG_ENTRY="$PACKAGE_NAME ($VERSION-1) unstable; urgency=medium
 
   * Release version $VERSION
   * See git log for detailed changes
 
- -- Chris Wage <cwage@quietlife.net>  $(date -R)
+ -- $MAINTAINER_NAME <$MAINTAINER_EMAIL>  $(date -R)
 "
 
 # Create temporary changelog with new version
 echo "$CHANGELOG_ENTRY" > debian/changelog.tmp
 if [ -f debian/changelog ]; then
     echo "" >> debian/changelog.tmp
-    tail -n +2 debian/changelog >> debian/changelog.tmp
+    cat debian/changelog >> debian/changelog.tmp
 fi
 mv debian/changelog.tmp debian/changelog
 
