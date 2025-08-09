@@ -261,6 +261,7 @@ static void on_tray_icon_popup_menu(GtkStatusIcon *status_icon, guint button,
     gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
 }
 
+
 static gboolean on_scroll_event(GtkStatusIcon *status_icon, GdkEventScroll *event, 
                                gpointer user_data)
 {
@@ -292,9 +293,23 @@ static void setup_tray_icon(volmix_app_t *app)
 {
     app->tray_icon = gtk_status_icon_new();
     
-    // Use a standard icon name for volume
-    gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(app->tray_icon),
-                                      "audio-volume-high");
+    // Load the inverted sound icon PNG (white speaker)
+    GError *error = NULL;
+    GdkPixbuf *icon_pixbuf = gdk_pixbuf_new_from_file_at_size(
+        "data/icons/sound-icon-inverted.png", 22, 22, &error);
+    
+    if (icon_pixbuf) {
+        gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(app->tray_icon), icon_pixbuf);
+        g_object_unref(icon_pixbuf);
+        printf("Loaded inverted sound icon PNG\n");
+    } else {
+        // Fallback to system icon if file not found
+        printf("Warning: Could not load sound icon (%s), using system icon\n", 
+               error ? error->message : "unknown error");
+        if (error) g_error_free(error);
+        gtk_status_icon_set_from_icon_name(GTK_STATUS_ICON(app->tray_icon),
+                                          "audio-volume-high");
+    }
     
     gtk_status_icon_set_tooltip_text(GTK_STATUS_ICON(app->tray_icon), 
                                     "volmix - Per-Application Audio Control");
