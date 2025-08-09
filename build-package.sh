@@ -28,7 +28,7 @@ fi
 
 # Get maintainer info from environment or extract from existing changelog
 MAINTAINER_LINE=$(grep "^ --" debian/changelog 2>/dev/null | head -1)
-if [[ "$MAINTAINER_LINE" =~ ^\ \-\-\ ([^<]+)\ <([^>]+)> ]]; then
+if [[ "$MAINTAINER_LINE" =~ ^\ \-\-\ ([^\<]+)\ \<([^\>]+)\> ]]; then
     MAINTAINER_NAME="${MAINTAINER_NAME:-${BASH_REMATCH[1]}}"
     MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-${BASH_REMATCH[2]}}"
 fi
