@@ -32,7 +32,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
-    # Build packages for multiple architectures in parallel
+    # Build package for amd64 only
     - name: Build amd64 package
       run: |
         echo "Building amd64 package..."
@@ -48,22 +48,6 @@ jobs:
           exit 1
         fi
         mv "${files[@]}" packages/amd64/
-        shopt -u nullglob
-        
-    - name: Build arm64 package  
-      run: |
-        echo "Building arm64 package..."
-        ./build-package.sh "arm64" "release"
-        mkdir -p packages/arm64
-        
-        # Move build artifacts with proper error handling
-        shopt -s nullglob
-        files=( *.deb *.changes *.buildinfo )
-        if [ ${#files[@]} -eq 0 ]; then
-          echo "ERROR: No build artifacts (*.deb, *.changes, *.buildinfo) found for arm64." >&2
-          exit 1
-        fi
-        mv "${files[@]}" packages/arm64/
         shopt -u nullglob
         
     - name: Collect all packages
