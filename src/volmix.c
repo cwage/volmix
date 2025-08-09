@@ -25,6 +25,10 @@ typedef struct {
 
 static volmix_app_t app_data;
 
+// Forward declaration
+static void update_slider_indexes(volmix_app_t *app);
+static void update_sliders_recursive(GList *widgets, GList *apps);
+
 // Asynchronous callback for PulseAudio processing
 static gboolean async_iterate_callback(gpointer user_data)
 {
@@ -160,8 +164,12 @@ static void build_volume_window(volmix_app_t *app)
             uint32_t *index_ptr = g_malloc(sizeof(uint32_t));
             *index_ptr = audio_app->index;
             
+            // Store application name for index updates
+            char *app_name = g_strdup(audio_app->name);
+            
             // Use g_object_set_data_full to ensure memory is freed when widget is destroyed
             g_object_set_data_full(G_OBJECT(slider), "sink_input_index", index_ptr, g_free);
+            g_object_set_data_full(G_OBJECT(slider), "app_name", app_name, g_free);
             
             // Connect slider signal using the stored data instead of direct pointer
             g_signal_connect(slider, "value-changed", G_CALLBACK(on_app_volume_changed), 
@@ -375,7 +383,84 @@ static gboolean pulse_client_timer_callback(gpointer user_data)
     // Process PulseAudio events
     pulse_client_iterate(&app->pulse_client);
     
+    // Check if sink inputs have changed and window is visible
+    if (pulse_client_sink_inputs_changed(&app->pulse_client) && 
+        app->volmix_window && gtk_widget_get_visible(app->volmix_window)) {
+        printf("Sink inputs changed, updating slider indexes...\n");
+        update_slider_indexes(app);
+    }
+    
     return G_SOURCE_CONTINUE; // Keep the timer running
+}
+
+// Function to update slider widget data with current sink input indexes
+static void update_slider_indexes(volmix_app_t *app)
+{
+    if (!app->volmix_window || !gtk_widget_get_visible(app->volmix_window)) {
+        return;
+    }
+    
+    // Refresh the sink input list
+    pulse_client_refresh_apps(&app->pulse_client);
+    
+    // Process the refresh operation
+    if (app->pulse_client.operation) {
+        int timeout_count = 0;
+        while (pa_operation_get_state(app->pulse_client.operation) == PA_OPERATION_RUNNING && 
+               timeout_count < MAX_REFRESH_TIMEOUT) {
+            pulse_client_iterate(&app->pulse_client);
+            g_usleep(DELAY_5_MS_USEC);
+            timeout_count++;
+        }
+        pa_operation_unref(app->pulse_client.operation);
+        app->pulse_client.operation = NULL;
+    }
+    
+    // Get current apps list
+    GList *apps = pulse_client_get_apps(&app->pulse_client);
+    
+    // Find all slider widgets and update their stored sink input indexes
+    GList *widgets = gtk_container_get_children(GTK_CONTAINER(app->volmix_window));
+    update_sliders_recursive(widgets, apps);
+    g_list_free(widgets);
+}
+
+// Recursive function to find and update slider widgets
+static void update_sliders_recursive(GList *widgets, GList *apps)
+{
+    while (widgets) {
+        GtkWidget *widget = GTK_WIDGET(widgets->data);
+        
+        if (GTK_IS_SCALE(widget)) {
+            // This is a volume slider - check if it has stored app data
+            uint32_t *stored_index = (uint32_t *)g_object_get_data(G_OBJECT(widget), "sink_input_index");
+            char *stored_app_name = (char *)g_object_get_data(G_OBJECT(widget), "app_name");
+            
+            if (stored_index && stored_app_name) {
+                // Find the current index for this app name
+                GList *app_item = apps;
+                while (app_item) {
+                    app_audio_t *app = (app_audio_t *)app_item->data;
+                    if (strcmp(app->name, stored_app_name) == 0) {
+                        if (*stored_index != app->index) {
+                            printf("Updating slider for '%s': index %u -> %u\n", 
+                                   stored_app_name, *stored_index, app->index);
+                            *stored_index = app->index;
+                        }
+                        break;
+                    }
+                    app_item = app_item->next;
+                }
+            }
+        } else if (GTK_IS_CONTAINER(widget)) {
+            // Recursively check container widgets
+            GList *children = gtk_container_get_children(GTK_CONTAINER(widget));
+            update_sliders_recursive(children, apps);
+            g_list_free(children);
+        }
+        
+        widgets = widgets->next;
+    }
 }
 
 int main(int argc, char *argv[])

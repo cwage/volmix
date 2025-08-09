@@ -23,6 +23,7 @@ typedef struct {
     pa_cvolume default_sink_volume;
     gboolean default_sink_muted;
     GList *audio_apps;        // List of app_audio_t
+    gboolean sink_inputs_changed;  // Flag to indicate sink inputs have changed
 } pulse_client_t;
 
 // Initialize PulseAudio client
@@ -54,6 +55,9 @@ gboolean pulse_client_toggle_master_mute(pulse_client_t *client);
 
 // Process PulseAudio events (call periodically)
 void pulse_client_iterate(pulse_client_t *client);
+
+// Check if sink inputs have changed since last check
+gboolean pulse_client_sink_inputs_changed(pulse_client_t *client);
 
 // Application management functions
 void pulse_client_refresh_apps(pulse_client_t *client);

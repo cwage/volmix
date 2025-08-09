@@ -8,6 +8,7 @@ static void context_state_callback(pa_context *c, void *userdata);
 static void sink_info_callback(pa_context *c, const pa_sink_info *info, int eol, void *userdata);
 static void server_info_callback(pa_context *c, const pa_server_info *info, void *userdata);
 static void sink_input_info_callback(pa_context *c, const pa_sink_input_info *info, int eol, void *userdata);
+static void subscription_callback(pa_context *c, pa_subscription_event_type_t t, uint32_t index, void *userdata);
 
 gboolean pulse_client_init(pulse_client_t *client)
 {
@@ -17,6 +18,7 @@ gboolean pulse_client_init(pulse_client_t *client)
     
     memset(client, 0, sizeof(pulse_client_t));
     client->audio_apps = NULL;
+    client->sink_inputs_changed = FALSE;
     
     // Create mainloop
     client->mainloop = pa_mainloop_new();
@@ -111,6 +113,22 @@ gboolean pulse_client_connect(pulse_client_t *client)
         if (state == PA_CONTEXT_READY) {
             client->connected = TRUE;
             printf("Connected to PulseAudio server\n");
+            
+            // Subscribe to sink input events to detect when applications start/stop audio
+            pa_context_set_subscribe_callback(client->context, subscription_callback, client);
+            client->operation = pa_context_subscribe(client->context, 
+                                                   PA_SUBSCRIPTION_MASK_SINK_INPUT, 
+                                                   NULL, NULL);
+            if (!client->operation) {
+                printf("Failed to subscribe to PulseAudio events\n");
+                return FALSE;
+            }
+            
+            while (pa_operation_get_state(client->operation) == PA_OPERATION_RUNNING) {
+                pa_mainloop_iterate(client->mainloop, 1, NULL);
+            }
+            pa_operation_unref(client->operation);
+            client->operation = NULL;
             
             // Get server info to find default sink
             client->operation = pa_context_get_server_info(client->context, 
@@ -256,6 +274,17 @@ void pulse_client_iterate(pulse_client_t *client)
     // Process pending PulseAudio events (non-blocking)
     int retval;
     pa_mainloop_iterate(client->mainloop, 0, &retval);
+}
+
+gboolean pulse_client_sink_inputs_changed(pulse_client_t *client)
+{
+    if (!client) {
+        return FALSE;
+    }
+    
+    gboolean changed = client->sink_inputs_changed;
+    client->sink_inputs_changed = FALSE; // Reset the flag
+    return changed;
 }
 
 // Callback functions
@@ -511,4 +540,19 @@ static void sink_input_info_callback(pa_context *c, const pa_sink_input_info *in
            app->name, app->process_name, app->index, 
            app_audio_get_volume_percent(app),
            app->muted ? "yes" : "no");
+}
+
+// Subscription callback to handle PulseAudio events
+static void subscription_callback(pa_context *c, pa_subscription_event_type_t t, uint32_t index, void *userdata)
+{
+    pulse_client_t *client = (pulse_client_t *)userdata;
+    
+    // Check if this is a sink input event
+    if ((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK_INPUT) {
+        // Mark that sink inputs have changed - this will trigger UI update
+        client->sink_inputs_changed = TRUE;
+        printf("Sink input event detected (index=%u, type=%s)\n", index,
+               (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_NEW ? "NEW" :
+               (t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE ? "REMOVE" : "CHANGE");
+    }
 }
