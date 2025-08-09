@@ -11,6 +11,31 @@ echo "Building volmix Debian package..."
 echo "Architecture: $ARCHITECTURE"
 echo "Build Type: $BUILD_TYPE"
 
+# Get version from git tag or default to 1.0.0
+if git describe --tags --exact-match 2>/dev/null; then
+    VERSION=$(git describe --tags --exact-match | sed 's/^v//')
+else
+    VERSION="1.0.0"
+fi
+echo "Version: $VERSION"
+
+# Update debian/changelog with current version
+CHANGELOG_ENTRY="volmix ($VERSION-1) unstable; urgency=medium
+
+  * Release version $VERSION
+  * See git log for detailed changes
+
+ -- Chris Wage <cwage@quietlife.net>  $(date -R)
+"
+
+# Create temporary changelog with new version
+echo "$CHANGELOG_ENTRY" > debian/changelog.tmp
+if [ -f debian/changelog ]; then
+    echo "" >> debian/changelog.tmp
+    tail -n +2 debian/changelog >> debian/changelog.tmp
+fi
+mv debian/changelog.tmp debian/changelog
+
 # Build the Docker image with current user's UID/GID
 echo "Building Docker image..."
 docker build \
