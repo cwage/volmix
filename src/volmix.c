@@ -303,13 +303,13 @@ static void setup_tray_icon(volmix_app_t *app)
     
     // Check development location first
     if (g_file_test(dev_icon_path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
-        icon_path = g_strdup(dev_icon_path);
-        icon_pixbuf = gdk_pixbuf_new_from_file_at_size(icon_path, 22, 22, &error);
+        icon_pixbuf = gdk_pixbuf_new_from_file_at_size(dev_icon_path, 22, 22, &error);
+        icon_path = g_strdup(dev_icon_path);  // Keep track for error reporting
     }
     // Check installed location if development location failed
     else if (g_file_test(installed_icon_path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
-        icon_path = g_strdup(installed_icon_path);
-        icon_pixbuf = gdk_pixbuf_new_from_file_at_size(icon_path, 22, 22, &error);
+        icon_pixbuf = gdk_pixbuf_new_from_file_at_size(installed_icon_path, 22, 22, &error);
+        icon_path = g_strdup(installed_icon_path);  // Keep track for error reporting
     }
     
     g_free(dev_icon_path);
