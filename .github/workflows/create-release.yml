@@ -29,6 +29,7 @@ on:
 jobs:
   build-packages:
     runs-on: ubuntu-latest
+    if: github.event.inputs.version != ''
     strategy:
       matrix:
         architecture: ${{ fromJSON(format('["{0}"]', join(split(inputs.architectures, ','), '","'))) }}
@@ -81,6 +82,7 @@ jobs:
   create-release:
     needs: build-packages
     runs-on: ubuntu-latest
+    if: github.event.inputs.version != ''
     permissions:
       contents: write
     
