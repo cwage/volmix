@@ -294,13 +294,26 @@ static void setup_tray_icon(volmix_app_t *app)
     app->tray_icon = gtk_status_icon_new();
     
     // Load the inverted sound icon PNG (white speaker)
-    gchar *icon_path = g_build_filename("data", "icons", "sound-icon-inverted.png", NULL);
+    // Try development location first, then installed location
+    gchar *dev_icon_path = g_build_filename("data", "icons", "sound-icon-inverted.png", NULL);
+    gchar *installed_icon_path = g_build_filename(DATADIR, "volmix", "icons", "sound-icon-inverted.png", NULL);
+    gchar *icon_path = NULL;
     GError *error = NULL;
     GdkPixbuf *icon_pixbuf = NULL;
     
-    if (g_file_test(icon_path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+    // Check development location first
+    if (g_file_test(dev_icon_path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+        icon_path = g_strdup(dev_icon_path);
         icon_pixbuf = gdk_pixbuf_new_from_file_at_size(icon_path, 22, 22, &error);
     }
+    // Check installed location if development location failed
+    else if (g_file_test(installed_icon_path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
+        icon_path = g_strdup(installed_icon_path);
+        icon_pixbuf = gdk_pixbuf_new_from_file_at_size(icon_path, 22, 22, &error);
+    }
+    
+    g_free(dev_icon_path);
+    g_free(installed_icon_path);
     
     if (icon_pixbuf) {
         gtk_status_icon_set_from_pixbuf(GTK_STATUS_ICON(app->tray_icon), icon_pixbuf);
