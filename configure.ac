@@ -12,4 +12,7 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.0.0])
 PKG_CHECK_MODULES([PULSE], [libpulse >= 0.9.16])
 PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.32.0])
 
+# Define paths for data files
+AC_SUBST(pkgdatadir, ['${datadir}/volmix'])
+
 AC_OUTPUT

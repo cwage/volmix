@@ -1,3 +1,7 @@
 SUBDIRS = src
 
-EXTRA_DIST = autogen.sh
+# Install data files
+iconsdir = $(datadir)/volmix/icons
+icons_DATA = data/icons/sound-icon-inverted.png
+
+EXTRA_DIST = autogen.sh $(icons_DATA)
