@@ -20,16 +20,15 @@ A lightweight system tray application for Linux that provides per-application vo
 
 Download the latest `.deb` package from the [releases page](https://github.com/cwage/volmix/releases):
 
-```bash
-# Download the package for your architecture (replace <version> with latest release version)
-wget https://github.com/cwage/volmix/releases/latest/download/volmix_<version>_amd64.deb
-
-# Install the package (replace <version> with the actual version downloaded)
-sudo dpkg -i volmix_<version>_amd64.deb
-
-# Install any missing dependencies
-sudo apt-get install -f
-```
+1. Go to the [releases page](https://github.com/cwage/volmix/releases)
+2. Download the `.deb` file for your architecture:
+   - `volmix_*_amd64.deb` for most desktop/laptop systems
+   - `volmix_*_arm64.deb` for ARM-based systems (Raspberry Pi 4+, etc.)
+3. Install the package:
+   ```bash
+   sudo dpkg -i volmix_*.deb
+   sudo apt-get install -f  # Install any missing dependencies
+   ```
 
 **Available Architectures:**
 - `amd64` (x86_64) - Most desktop/laptop systems
@@ -37,9 +36,9 @@ sudo apt-get install -f
 
 ### Option 2: Build from Source
 
-## Dependencies
+#### Build Dependencies
 
-### Required Libraries
+Required libraries:
 - `libpulse-dev` - PulseAudio client library
 - `libgtk-3-dev` - GTK3 GUI framework  
 - `libglib2.0-dev` - GLib utilities
@@ -47,13 +46,13 @@ sudo apt-get install -f
 - `build-essential` - Compilation tools
 - `autotools-dev autoconf automake` - Build system
 
-### Installation on Debian/Ubuntu
+Install build dependencies on Debian/Ubuntu:
 ```bash
 sudo apt install build-essential autotools-dev autoconf automake \
                  libpulse-dev libgtk-3-dev libglib2.0-dev pkg-config
 ```
 
-## Building
+#### Building Steps
 
 1. **Generate build configuration:**
    ```bash
