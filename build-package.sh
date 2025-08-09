@@ -38,7 +38,20 @@ MAINTAINER_NAME="${MAINTAINER_NAME:-Chris Wage}"
 MAINTAINER_EMAIL="${MAINTAINER_EMAIL:-cwage@quietlife.net}"
 
 # Update debian/changelog with current version
-CHANGELOG_ENTRY="$PACKAGE_NAME ($VERSION-1) unstable; urgency=medium
+# Determine next revision number for this version
+if [ -f debian/changelog ]; then
+    # Extract all revision numbers for this version, sort, and get the highest
+    LAST_REVISION=$(grep -E "^$PACKAGE_NAME \($VERSION-[0-9]+\)" debian/changelog | \
+        sed -E "s/^$PACKAGE_NAME \($VERSION-([0-9]+)\).*/\1/" | sort -n | tail -1)
+    if [ -n "$LAST_REVISION" ]; then
+        NEXT_REVISION=$((LAST_REVISION + 1))
+    else
+        NEXT_REVISION=1
+    fi
+else
+    NEXT_REVISION=1
+fi
+CHANGELOG_ENTRY="$PACKAGE_NAME ($VERSION-$NEXT_REVISION) unstable; urgency=medium
 
   * Release version $VERSION
   * See git log for detailed changes
