@@ -56,7 +56,7 @@ CHANGELOG_ENTRY="$PACKAGE_NAME ($VERSION-$NEXT_REVISION) unstable; urgency=mediu
   * Release version $VERSION
   * See git log for detailed changes
 
- -- $MAINTAINER_NAME <$MAINTAINER_EMAIL>  $(date -R)
+ -- $MAINTAINER_NAME <$MAINTAINER_EMAIL> $(date -R)
 "
 
 # Create temporary changelog with new version
